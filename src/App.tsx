@@ -1,12 +1,19 @@
-import { BrowserRouter } from 'react-router-dom'
-import './assets/styles/reset.css'
+import { BrowserRouter } from 'react-router-dom';
+import './assets/styles/tailwind.css';
+import Nav from './components/layouts/Nav';
+import GlobalStyle from './assets/styles/GlobalStyle';
 
-function App() : JSX.Element{
-
+function App(): JSX.Element {
   return (
-    <BrowserRouter>
-    </BrowserRouter>
-  )
+    <>
+      <GlobalStyle />
+      <BrowserRouter>
+        <section>
+          <Nav />
+        </section>
+      </BrowserRouter>
+    </>
+  );
 }
 
-export default App
+export default App;
