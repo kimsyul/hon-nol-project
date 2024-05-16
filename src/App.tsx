@@ -1,6 +1,9 @@
 import { BrowserRouter } from 'react-router-dom';
 import './assets/styles/tailwind.css';
-import Nav from './components/layouts/Nav';
+import Header from './components/layouts/Header';
+import Footer from './components/layouts/Footer';
+import Router from './router/router';
+import Contents from './components/layouts/Contents';
 import GlobalStyle from './assets/styles/GlobalStyle';
 
 function App(): JSX.Element {
@@ -9,7 +12,11 @@ function App(): JSX.Element {
       <GlobalStyle />
       <BrowserRouter>
         <section>
-          <Nav />
+          <Header />
+          <Contents>
+            <Router />
+          </Contents>
+          <Footer />
         </section>
       </BrowserRouter>
     </>
