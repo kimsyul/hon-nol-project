@@ -1,90 +1,117 @@
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import Title from '../common/Title';
+import { useEffect, useState } from 'react';
+import { onAuthStateChanged, signOut, User } from 'firebase/auth';
+import { auth } from '../../firebaseConfig';
 
 const Header = (): JSX.Element => {
-  return (
-    <HeaderContainer>
-      <Title />
-      <CategoryContainer>
-        <CategoryButton to="/">홈</CategoryButton>
-        <CategoryButton to="/regions">지역별</CategoryButton>
-        <CategoryButton to="/theme">테마별</CategoryButton>
-      </CategoryContainer>
-      <div>
-        <WriteButton to="/wright">글쓰기</WriteButton>
-        <LoginButton to="/login">로그인</LoginButton>
-        <LoginButton to="/sign-up">회원가입</LoginButton>
-      </div>
-    </HeaderContainer>
-  );
+    const [user, setUser] = useState<User | null>(null);
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            setUser(user as User | null);
+        });
+
+        return () => unsubscribe();
+    }, []);
+    const handleLogout = async () => {
+        try {
+            await signOut(auth);
+        } catch (error) {
+            console.error('로그아웃에 실패했습니다.', error);
+        }
+    };
+    return (
+        <HeaderContainer>
+            <Title />
+            <CategoryContainer>
+                <CategoryButton to="/">홈</CategoryButton>
+                <CategoryButton to="/regions">지역별</CategoryButton>
+                <CategoryButton to="/theme">테마별</CategoryButton>
+            </CategoryContainer>
+            {user ? (
+                <div>
+                    <LoginButton to="/wright">글쓰기</LoginButton>
+                    <LogoutButton to="/" onClick={handleLogout}>
+                        로그아웃
+                    </LogoutButton>
+                </div>
+            ) : (
+                <div>
+                    <LoginButton to="/login">로그인</LoginButton>
+                    <LoginButton to="/sign-up">회원가입</LoginButton>
+                </div>
+            )}
+        </HeaderContainer>
+    );
 };
 
 const HeaderContainer = styled.div`
-  width: 100%;
-  height: 80px;
-  background: white;
-  border-bottom: 1px solid #dbebff;
-  display: flex;
-  align-items: center;
-  padding: 10px 25px;
-  justify-content: space-between;
-  position: relative;
-  z-index: 10;
+    width: 100%;
+    height: 80px;
+    background: white;
+    border-bottom: 1px solid #dbebff;
+    display: flex;
+    align-items: center;
+    padding: 10px 25px;
+    justify-content: space-between;
+    position: relative;
+    z-index: 10;
 `;
 
 //카테고리
 
 const CategoryContainer = styled.div`
-  display: flex;
-  align-items: center;
-  font-size: 20px;
-  font-weight: bold;
-  flex-grow: 1;
-  color: gray;
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+    font-weight: bold;
+    flex-grow: 1;
+    color: gray;
 `;
 
 const CategoryButton = styled(Link)`
-  margin-right: 15px;
-  padding: 10px;
-  &:hover {
-    color: #ffabab;
-    border-bottom: 3px solid #ffabab;
-  }
+    margin-right: 15px;
+    padding: 10px;
+    &:hover {
+        color: #ffabab;
+        border-bottom: 3px solid #ffabab;
+    }
 `;
 
 //버튼
 
 const Button = styled(Link)`
-  width: 80px;
-  height: 30px;
-  border-radius: 10px;
-  border: 1px solid #86ade8;
-  font-weight: bold;
-  padding: 10px;
-  margin-right: 5px;
-  &:hover {
-    border-color: #ffabab;
-  }
-  &:last-child {
-    margin-right: 0px;
-  }
+    width: 80px;
+    height: 30px;
+    border-radius: 10px;
+    border: 1px solid #86ade8;
+    font-weight: bold;
+    padding: 10px;
+    margin-right: 5px;
+    &:hover {
+        border-color: #ffabab;
+    }
+    &:last-child {
+        margin-right: 0px;
+    }
 `;
 
-const WriteButton = styled(Button)`
-  background-color: white;
-  color: #86ade8;
-  &:hover {
-    color: #ffabab;
-  }
+const LogoutButton = styled(Button)`
+    background-color: white;
+    color: #86ade8;
+    &:hover {
+        color: #ffabab;
+    }
 `;
 
 const LoginButton = styled(Button)`
-  background-color: #86ade8;
-  color: white;
-  &:hover {
-    background-color: #ffabab;
-  }
+    background-color: #86ade8;
+    color: white;
+    &:hover {
+        background-color: #ffabab;
+    }
 `;
 
 export default Header;
