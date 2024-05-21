@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import styled from 'styled-components';
-import { createUserWithEmailAndPassword, signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../firebaseConfig';
 import { Link } from 'react-router-dom';
 import { Container, Title, Input, Button, ErrorMessage, GoogleButton } from '../components/common/Form';
@@ -13,9 +13,17 @@ const SignUp = (): JSX.Element => {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
+    const handleGoogleSignup = async () => {
+        try {
+            await signInWithPopup(auth, googleProvider);
+            navigate('/');
+        } catch (err) {
+            setError('구글 계정을 다시 확인해주세요. ㅠ_ㅠ');
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError('');
 
         if (password !== confirmPassword) {
             setError('입력하신 비밀번호가 일치하지 않습니다. ㅠ_ㅠ');
@@ -32,16 +40,6 @@ const SignUp = (): JSX.Element => {
         }
     };
 
-    const handleGoogleSignup = async () => {
-        try {
-            await signInWithPopup(auth, googleProvider);
-            alert('회원가입 성공! 환영합니다~ :-)');
-            navigate('/');
-        } catch (err) {
-            setError('구글 계정을 다시 확인해주세요. ㅠ_ㅠ');
-        }
-    };
-
     return (
         <Container>
             <Title>Signup</Title>
@@ -52,13 +50,16 @@ const SignUp = (): JSX.Element => {
                     placeholder="이메일"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    required
                 />
+
                 <Input
                     id="signupPassword"
                     type="password"
                     placeholder="비밀번호"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    required
                 />
                 <Input
                     id="confirmPassword"
@@ -66,6 +67,7 @@ const SignUp = (): JSX.Element => {
                     placeholder="비밀번호 확인"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
                 />
                 {error && <ErrorMessage>{error}</ErrorMessage>}
                 <Button type="submit">회원가입</Button>

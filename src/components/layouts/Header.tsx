@@ -32,7 +32,7 @@ const Header = (): JSX.Element => {
             </CategoryContainer>
             {user ? (
                 <div>
-                    <LoginButton to="/wright">글쓰기</LoginButton>
+                    <LoginButton to="/post">글쓰기</LoginButton>
                     <LogoutButton to="/" onClick={handleLogout}>
                         로그아웃
                     </LogoutButton>
