@@ -1,16 +1,16 @@
 import { useState } from 'react';
 import styled from 'styled-components';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, AuthError } from 'firebase/auth';
 import { auth, googleProvider } from '../firebaseConfig';
 import { Link } from 'react-router-dom';
 import { Container, Title, Input, Button, ErrorMessage, GoogleButton } from '../components/common/Form';
 import { useNavigate } from 'react-router-dom';
 
 const SignUp = (): JSX.Element => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [error, setError] = useState('');
+    const [email, setEmail] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
+    const [confirmPassword, setConfirmPassword] = useState<string>('');
+    const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
 
     const handleGoogleSignup = async () => {
@@ -36,7 +36,17 @@ const SignUp = (): JSX.Element => {
             alert('회원가입 성공! 환영합니다~ :-)');
             navigate('/');
         } catch (err) {
-            setError('회원가입에 실패했습니다. 다시 시도해주세요. ㅠ_ㅠ');
+            const error = err as AuthError;
+            if (error.code === 'auth/email-already-in-use') {
+                setError('이미 사용 중인 이메일입니다.');
+            } else if (error.code === 'auth/weak-password') {
+                setError('비밀번호는 최소 6자 이상으로 설정해주세요!');
+            } else if (error.code === 'auth/invalid-email') {
+                setError('유효한 이메일 형식으로 입력해주세요.');
+            } else {
+                console.error('Error signing up: ', error);
+                setError('회원가입에 실패했습니다. 다시 시도해주세요. ㅠ_ㅠ');
+            }
         }
     };
 

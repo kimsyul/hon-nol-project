@@ -5,6 +5,7 @@ import Error from '../pages/Error';
 import Regions from '../pages/Regions';
 import SignUp from '../pages/SignUp';
 import ThemeCategory from '../pages/ThemeCategory';
+import CreatePost from '../pages/CreatePost';
 import { memo } from 'react';
 
 const Router = (): JSX.Element => {
@@ -16,6 +17,7 @@ const Router = (): JSX.Element => {
             <Route path="/sign-up" element={<SignUp />} />
             <Route path="/regions" element={<Regions />} />
             <Route path="/theme" element={<ThemeCategory />} />
+            <Route path="/post" element={<CreatePost />} />
         </Routes>
     );
 };
