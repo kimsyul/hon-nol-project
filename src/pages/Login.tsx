@@ -3,7 +3,7 @@ import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../firebaseConfig';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Container, Title, Input, Button, ErrorMessage, GoogleButton } from '../components/common/Form';
+import { Container, Title, Input, Button, ErrorMessage, GoogleButton } from '../assets/styles/Form';
 
 const Login = (): JSX.Element => {
     const [email, setEmail] = useState('');

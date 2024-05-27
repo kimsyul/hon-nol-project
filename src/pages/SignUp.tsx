@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, AuthError } from 'firebase/auth';
 import { auth, googleProvider } from '../firebaseConfig';
 import { Link } from 'react-router-dom';
-import { Container, Title, Input, Button, ErrorMessage, GoogleButton } from '../components/common/Form';
+import { Container, Title, Input, Button, ErrorMessage, GoogleButton } from '../assets/styles/Form';
 import { useNavigate } from 'react-router-dom';
 
 const SignUp = (): JSX.Element => {
