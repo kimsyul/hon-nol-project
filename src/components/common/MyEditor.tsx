@@ -1,6 +1,4 @@
 import { useState } from 'react';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
 
 const MyEditor = (): JSX.Element => {
     const [content, setContent] = useState<string>('');
