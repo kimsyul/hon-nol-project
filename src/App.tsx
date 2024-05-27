@@ -2,7 +2,7 @@ import { BrowserRouter } from 'react-router-dom';
 import './assets/styles/tailwind.css';
 import Header from './components/layouts/Header';
 import Footer from './components/layouts/Footer';
-import Routers from './router/router';
+import AppRouter from './router/router';
 import Contents from './components/layouts/Contents';
 import GlobalStyle from './assets/styles/GlobalStyle';
 
@@ -14,7 +14,7 @@ function App(): JSX.Element {
                 <section>
                     <Header />
                     <Contents>
-                        <Routers />
+                        <AppRouter />
                     </Contents>
                     <Footer />
                 </section>
