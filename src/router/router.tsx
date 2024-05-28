@@ -1,10 +1,12 @@
 import { Routes, Route } from 'react-router-dom';
-import Login from '../pages/Login';
 import Home from '../pages/Home';
 import Error from '../pages/Error';
-import Regions from '../pages/Regions';
+import RegionDetail from '../pages/RegionDetail';
+import ThemeDetail from '../pages/ThemeDetail';
+import AllRegions from '../pages/AllRegions';
+import AllThemes from '../pages/AllThemes';
+import Login from '../pages/Login';
 import SignUp from '../pages/SignUp';
-import ThemeCategory from '../pages/ThemeCategory';
 import CreatePost from '../pages/CreatePost';
 import { memo } from 'react';
 import { auth } from '../firebaseConfig';
@@ -31,13 +33,15 @@ const AppRouterComponent = (): JSX.Element => {
 
     return (
         <Routes>
-            <Route path="*" element={<Error />} />
             <Route path="/" element={<Home />} />
+            <Route path="/regions" element={<AllRegions />} />
+            <Route path="/themes" element={<AllThemes />} />
+            <Route path="/regions/:regionID" element={<RegionDetail />} />
+            <Route path="/themes/:themeID" element={<ThemeDetail />} />
             <Route path="/login" element={<AuthRedirect currentUser={currentUser} component={<Login />} />} />
             <Route path="/sign-up" element={<AuthRedirect currentUser={currentUser} component={<SignUp />} />} />
-            <Route path="/region" element={<Regions />} />
-            <Route path="/theme" element={<ThemeCategory />} />
             <Route path="/post" element={<ProtectedRoute currentUser={currentUser} component={<CreatePost />} />} />
+            <Route path="*" element={<Error />} />
         </Routes>
     );
 };

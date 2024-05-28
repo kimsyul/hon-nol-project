@@ -10,14 +10,12 @@ interface SubNavProps {
 const Nav: React.FC<SubNavProps> = ({ menu, categories }) => {
     return (
         <NavContainer>
-            {menu === 'home' && (
-                <CategoryNav>반가워요! 당신의 혼자만의 시간을 응원합니다! :)</CategoryNav>
-            )}
+            {menu === 'home' && <CategoryNav>반가워요! 당신의 혼자만의 시간을 응원합니다! :)</CategoryNav>}
             {menu === 'regions' && (
                 <CategoryNav>
-                    <NavLink to='/all'>전체보기</NavLink>
-                    {Object.entries(categories.regions).map(([key, value]) =>(
-                        <NavLink key={key} to={`/region/${key}`}>
+                    <NavLink to="/regions">전체보기</NavLink>
+                    {Object.entries(categories.regions).map(([key, value]) => (
+                        <NavLink key={key} to={`/regions/${key}`}>
                             {value.name}
                         </NavLink>
                     ))}
@@ -25,16 +23,15 @@ const Nav: React.FC<SubNavProps> = ({ menu, categories }) => {
             )}
             {menu === 'themes' && (
                 <CategoryNav>
-                    <NavLink to='/all'>전체보기</NavLink>
-                    {Object.entries(categories.themes).map(([key, value]) =>(
-                        <NavLink key={key} to={`/theme/${key}`}>
+                    <NavLink to="/themes">전체보기</NavLink>
+                    {Object.entries(categories.themes).map(([key, value]) => (
+                        <NavLink key={key} to={`/themes/${key}`}>
                             {value.name}
                         </NavLink>
                     ))}
                 </CategoryNav>
             )}
         </NavContainer>
-\           
     );
 };
 

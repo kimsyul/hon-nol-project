@@ -37,7 +37,7 @@ const Header = (): JSX.Element => {
                     <CategoryButton to="/regions" onClick={() => setMenu('regions')}>
                         지역별
                     </CategoryButton>
-                    <CategoryButton to="/theme" onClick={() => setMenu('themes')}>
+                    <CategoryButton to="/themes" onClick={() => setMenu('themes')}>
                         테마별
                     </CategoryButton>
                 </CategoryContainer>
