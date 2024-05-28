@@ -1,18 +1,8 @@
-import Nav from '../components/layouts/Nav';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { categories } from '../categoryList';
 
 const Regions = (): JSX.Element => {
-    return (
-        <Nav>
-            {Object.entries(categories.regions).map(([key, { name }]) => (
-                <StyledCategories key={key} to={key}>
-                    {name}
-                </StyledCategories>
-            ))}
-        </Nav>
-    );
+    return <div>regions</div>;
 };
 
 const StyledCategories = styled(Link)`

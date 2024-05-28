@@ -11,7 +11,7 @@ interface Theme {
     name: string;
 }
 
-interface Categories {
+export interface Categories {
     regions: { [key: string]: Region };
     themes: { [key: string]: Theme };
 }

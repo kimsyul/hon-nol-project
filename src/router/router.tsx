@@ -35,7 +35,7 @@ const AppRouterComponent = (): JSX.Element => {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<AuthRedirect currentUser={currentUser} component={<Login />} />} />
             <Route path="/sign-up" element={<AuthRedirect currentUser={currentUser} component={<SignUp />} />} />
-            <Route path="/regions" element={<Regions />} />
+            <Route path="/region" element={<Regions />} />
             <Route path="/theme" element={<ThemeCategory />} />
             <Route path="/post" element={<ProtectedRoute currentUser={currentUser} component={<CreatePost />} />} />
         </Routes>

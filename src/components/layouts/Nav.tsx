@@ -1,13 +1,40 @@
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
-import { categories } from '../../categoryList';
+import { Categories } from '../../categoryList';
 
-const Nav = ({ children }: NavPro): JSX.Element => {
+interface SubNavProps {
+    menu: string;
+    categories: Categories;
+}
+
+const Nav: React.FC<SubNavProps> = ({ menu, categories }) => {
     return (
         <NavContainer>
-            <NavLink to="/">전체보기</NavLink>
-            <CategoryContainer>{children}</CategoryContainer>
+            {menu === 'home' && (
+                <CategoryNav>반가워요! 당신의 혼자만의 시간을 응원합니다! :)</CategoryNav>
+            )}
+            {menu === 'regions' && (
+                <CategoryNav>
+                    <NavLink to='/all'>전체보기</NavLink>
+                    {Object.entries(categories.regions).map(([key, value]) =>(
+                        <NavLink key={key} to={`/region/${key}`}>
+                            {value.name}
+                        </NavLink>
+                    ))}
+                </CategoryNav>
+            )}
+            {menu === 'themes' && (
+                <CategoryNav>
+                    <NavLink to='/all'>전체보기</NavLink>
+                    {Object.entries(categories.themes).map(([key, value]) =>(
+                        <NavLink key={key} to={`/theme/${key}`}>
+                            {value.name}
+                        </NavLink>
+                    ))}
+                </CategoryNav>
+            )}
         </NavContainer>
+\           
     );
 };
 

@@ -4,8 +4,8 @@ import Title from '../common/Title';
 import { useEffect, useState } from 'react';
 import { onAuthStateChanged, signOut, User } from 'firebase/auth';
 import { auth } from '../../firebaseConfig';
-import { categories } from '../../categoryList';
-import { NavContainer, NavLink, CategoryNav } from './Nav';
+import { categories, Categories } from '../../categoryList';
+import Nav from './Nav';
 
 const Header = (): JSX.Element => {
     const [user, setUser] = useState<User | null>(null);
@@ -31,9 +31,15 @@ const Header = (): JSX.Element => {
             <HeaderContainer>
                 <Title />
                 <CategoryContainer>
-                    <CategoryButton to="/" onClick={() => setMenu('home')}>홈</CategoryButton>
-                    <CategoryButton to="/regions" onClick={() => setMenu('regions')}>지역별</CategoryButton>
-                    <CategoryButton to="/theme" onClick={() => setMenu('themes')}>테마별</CategoryButton>
+                    <CategoryButton to="/" onClick={() => setMenu('home')}>
+                        홈
+                    </CategoryButton>
+                    <CategoryButton to="/regions" onClick={() => setMenu('regions')}>
+                        지역별
+                    </CategoryButton>
+                    <CategoryButton to="/theme" onClick={() => setMenu('themes')}>
+                        테마별
+                    </CategoryButton>
                 </CategoryContainer>
                 {user ? (
                     <div>
@@ -49,14 +55,7 @@ const Header = (): JSX.Element => {
                     </div>
                 )}
             </HeaderContainer>
-            <NavContainer>
-                {menu === 'regions' && (
-                    <CategoryNav>
-                        {Object.entries(categories.regions).map([key, value])=> (
-                        <NavLink key={key}></NavLink>
-                    )}</CategoryNav>
-                )}
-            </NavContainer>
+            <Nav menu={menu} categories={categories as Categories} />
         </>
     );
 };
