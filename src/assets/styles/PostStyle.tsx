@@ -41,7 +41,6 @@ export const Select = styled.select`
 
 export const EditorContainer = styled.div`
     overflow: auto;
-    height: 100vh;
 `;
 
 export const SubmitButton = styled(Button)`

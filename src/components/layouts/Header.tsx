@@ -4,9 +4,12 @@ import Title from '../common/Title';
 import { useEffect, useState } from 'react';
 import { onAuthStateChanged, signOut, User } from 'firebase/auth';
 import { auth } from '../../firebaseConfig';
+import { categories } from '../../categoryList';
+import { NavContainer, NavLink, CategoryNav } from './Nav';
 
 const Header = (): JSX.Element => {
     const [user, setUser] = useState<User | null>(null);
+    const [menu, setMenu] = useState('home');
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -15,6 +18,7 @@ const Header = (): JSX.Element => {
 
         return () => unsubscribe();
     }, []);
+
     const handleLogout = async () => {
         try {
             await signOut(auth);
@@ -23,27 +27,37 @@ const Header = (): JSX.Element => {
         }
     };
     return (
-        <HeaderContainer>
-            <Title />
-            <CategoryContainer>
-                <CategoryButton to="/">홈</CategoryButton>
-                <CategoryButton to="/regions">지역별</CategoryButton>
-                <CategoryButton to="/theme">테마별</CategoryButton>
-            </CategoryContainer>
-            {user ? (
-                <div>
-                    <LoginButton to="/post">글쓰기</LoginButton>
-                    <LogoutButton to="/" onClick={handleLogout}>
-                        로그아웃
-                    </LogoutButton>
-                </div>
-            ) : (
-                <div>
-                    <LoginButton to="/login">로그인</LoginButton>
-                    <LoginButton to="/sign-up">회원가입</LoginButton>
-                </div>
-            )}
-        </HeaderContainer>
+        <>
+            <HeaderContainer>
+                <Title />
+                <CategoryContainer>
+                    <CategoryButton to="/" onClick={() => setMenu('home')}>홈</CategoryButton>
+                    <CategoryButton to="/regions" onClick={() => setMenu('regions')}>지역별</CategoryButton>
+                    <CategoryButton to="/theme" onClick={() => setMenu('themes')}>테마별</CategoryButton>
+                </CategoryContainer>
+                {user ? (
+                    <div>
+                        <LoginButton to="/post">글쓰기</LoginButton>
+                        <LogoutButton to="/" onClick={handleLogout}>
+                            로그아웃
+                        </LogoutButton>
+                    </div>
+                ) : (
+                    <div>
+                        <LoginButton to="/login">로그인</LoginButton>
+                        <LoginButton to="/sign-up">회원가입</LoginButton>
+                    </div>
+                )}
+            </HeaderContainer>
+            <NavContainer>
+                {menu === 'regions' && (
+                    <CategoryNav>
+                        {Object.entries(categories.regions).map([key, value])=> (
+                        <NavLink key={key}></NavLink>
+                    )}</CategoryNav>
+                )}
+            </NavContainer>
+        </>
     );
 };
 

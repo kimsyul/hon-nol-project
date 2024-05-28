@@ -1,4 +1,4 @@
-import Nav from '../components/common/Nav';
+import Nav from '../components/layouts/Nav';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { categories } from '../categoryList';
