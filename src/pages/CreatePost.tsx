@@ -1,17 +1,15 @@
-import { useState, useEffect, useRef, ChangeEvent } from 'react';
+import { useState, useRef, ChangeEvent } from 'react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
-import { getStorage, ref as storageRef, uploadString, getDownloadURL } from 'firebase/storage';
-import { Title, Form, SelectContainer, Select, SubmitButton } from '../assets/styles/PostStyle';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import styled from 'styled-components';
+import { Title, Form, SelectContainer, Select, SubmitButton } from '../assets/styles/PostStyle';
 import { categories } from '../categoryList.tsx';
 
 const CreatePost = (): JSX.Element => {
     const [title, setTitle] = useState<string>('');
     const [content, setContent] = useState<string>('');
-    const [imageFile, setImageFile] = useState<File | null>(null);
     const [selectedRegion, setSelectedRegion] = useState<string>('');
     const [selectedSubregion, setSelectedSubregion] = useState<string>('');
     const [selectedTheme, setSelectedTheme] = useState<string>('');
@@ -32,90 +30,83 @@ const CreatePost = (): JSX.Element => {
         setSelectedTheme(e.target.value);
     };
 
-    useEffect(() => {
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                console.log('Mutation detected: ', mutation);
-            });
-        });
-
-        const config = {
-            attributes: true,
-            childList: true,
-            subtree: true,
-        };
-
-        if (quillRef.current) {
-            observer.observe(quillRef.current.getEditor().root, config);
-        }
-
-        return () => {
-            observer.disconnect();
-        };
-    }, []);
-
-    const modules = {
-        toolbar: [
-            [{ header: [1, 2, 3, 4, 5, 6, false] }],
-            ['bold', 'italic', 'underline', 'strike'],
-            [{ align: [] }],
-            [{ list: 'ordered' }, { list: 'bullet' }],
-            ['link', 'image'],
-            [{ color: [] }, { background: [] }],
-            ['clean'],
-        ],
-        clipboard: {
-            matchVisual: false,
-        },
-    };
-
-    const formats = [
-        'header',
-        'bold',
-        'italic',
-        'underline',
-        'strike',
-        'align',
-        'list',
-        'bullet',
-        'link',
-        'image',
-        'color',
-        'background',
-    ];
-
     const handleEditorChange = (value: string) => {
         setContent(value);
     };
 
+    // // 포맷 가져오기
+    // const Font = Quill.import('formats/font');
+    // const Size = Quill.import('attributors/style/size');
+    // const Blockquote = Quill.import('formats/blockquote');
+    // const CodeBlock = Quill.import('formats/code-block');
+
+    // // 폰트 및 사이즈 화이트리스트 설정
+    // Font.whitelist = ['sans-serif', 'serif', 'monospace'];
+    // Size.whitelist = ['small', 'large', 'huge'];
+
+    // // Quill에 포맷 등록
+    // Quill.register(
+    //     {
+    //         'formats/font': Font,
+    //         'attributors/style/size': Size,
+    //         'formats/blockquote': Blockquote,
+    //         'formats/code-block': CodeBlock,
+    //     },
+    //     true,
+    // );
+
+    // const modules = {
+    //     toolbar: [
+    //         [{ font: Font.whitelist }],
+    //         [{ size: Size.whitelist }],
+    //         ['bold', 'italic', 'underline', 'strike'],
+    //         ['blockquote', 'code-block'],
+    //         [{ list: 'ordered' }, { list: 'bullet' }],
+    //         [{ indent: '-1' }, { indent: '+1' }],
+    //         [{ align: [] }],
+    //         ['clean'],
+    //     ],
+    // };
+
+    // const formats = [
+    //     'header',
+    //     'bold',
+    //     'italic',
+    //     'underline',
+    //     'strike',
+    //     'align',
+    //     'list',
+    //     'bullet',
+    //     'link',
+    //     'image',
+    //     'color',
+    //     'background',
+    // ];
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const storage = getStorage();
-        const contentRef = storageRef(storage, `contents/${Date.now()}`);
+
+        const post = {
+            title,
+            content: content,
+            region: selectedRegion,
+            subregion: selectedSubregion,
+            theme: selectedTheme,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+        };
 
         try {
-            const snapshot = await uploadString(contentRef, content, 'raw');
-            const downloadURL = await getDownloadURL(snapshot.ref);
-
-            const post = {
-                title,
-                region: selectedRegion,
-                subregion: selectedSubregion,
-                theme: selectedTheme,
-                contentURL: downloadURL,
-                createdAt: serverTimestamp(),
-                updatedAt: serverTimestamp(),
-            };
-
             await addDoc(collection(db, 'posts'), post);
             setTitle('');
+            setContent('');
             setSelectedRegion('');
             setSelectedSubregion('');
             setSelectedTheme('');
-            setContent('');
             alert('단비같은 정보 공유 감사합니다!');
         } catch (error) {
             console.error('Error adding document: ', error);
+            alert('게시글 등록에 실패했습니다.ㅠ_ㅠ');
         }
     };
 
@@ -175,8 +166,8 @@ const CreatePost = (): JSX.Element => {
                     theme="snow"
                     value={content}
                     onChange={handleEditorChange}
-                    modules={modules}
-                    formats={formats}
+                    // modules={modules}
+                    // formats={formats}
                 />
             </div>
             <SubmitButton type="submit">게시하기</SubmitButton>
