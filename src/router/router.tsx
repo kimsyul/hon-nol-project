@@ -13,6 +13,7 @@ import { onAuthStateChanged, User } from 'firebase/auth';
 import { useEffect, useState } from 'react';
 import AuthRedirect from './AuthRedirect';
 import ProtectedRoute from './ProtectedRoute';
+import PostDetail from '../pages/PostDetail';
 
 const AppRouterComponent = (): JSX.Element => {
     const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -35,8 +36,7 @@ const AppRouterComponent = (): JSX.Element => {
             <Route path="/" element={<Home />} />
             <Route path="/regions" element={<PostList />} />
             <Route path="/themes" element={<PostList />} />
-            <Route path="/regions/:regionID" element={<RegionDetail />} />
-            <Route path="/themes/:themeID" element={<ThemeDetail />} />
+            <Route path="/posts/:postID" element={<PostDetail />} />
             <Route path="/login" element={<AuthRedirect currentUser={currentUser} component={<Login />} />} />
             <Route path="/sign-up" element={<AuthRedirect currentUser={currentUser} component={<SignUp />} />} />
             <Route path="/post" element={<ProtectedRoute currentUser={currentUser} component={<CreatePost />} />} />

@@ -1,4 +1,4 @@
-import { ListContainer, ItemContainer, PostTitle, PostPreview, Info } from '../assets/styles/ListLayout';
+import { ListContainer, ItemContainer, PostTitle, Info } from '../assets/styles/ListLayout';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { collection, getDocs } from 'firebase/firestore';
@@ -21,7 +21,7 @@ const PostList = (): JSX.Element => {
             const postsData = querySnapshot.docs.map((doc) => ({
                 id: doc.id,
                 title: doc.data().title,
-                content: doc.data().content,
+                // content: doc.data().content,
                 region: doc.data().region,
                 theme: doc.data().theme,
             }));

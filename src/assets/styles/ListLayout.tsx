@@ -1,9 +1,17 @@
 import styled from 'styled-components';
 
 export const ListContainer = styled.div`
+    background-color: white;
     display: flex;
     flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
     padding: 20px;
+    border: none;
+    border-radius: 4px;
+    height: 100vh;
 `;
 
 export const ItemContainer = styled.div`
@@ -12,7 +20,6 @@ export const ItemContainer = styled.div`
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 8px;
-    background-color: white;
     cursor: pointer;
 `;
 
