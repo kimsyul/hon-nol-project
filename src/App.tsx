@@ -1,5 +1,6 @@
 import { BrowserRouter } from 'react-router-dom';
-import './assets/styles/tailwind.css';
+import './assets/css/tailwind.css';
+import './assets/css/reset.css';
 import Header from './components/layouts/Header';
 import Footer from './components/layouts/Footer';
 import AppRouter from './router/router';

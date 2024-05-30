@@ -11,6 +11,7 @@ import { categories } from '../categoryList.tsx';
 const CreatePost = (): JSX.Element => {
     const [title, setTitle] = useState<string>('');
     const [content, setContent] = useState<string>('');
+    const [imageFile, setImageFile] = useState<File | null>(null);
     const [selectedRegion, setSelectedRegion] = useState<string>('');
     const [selectedSubregion, setSelectedSubregion] = useState<string>('');
     const [selectedTheme, setSelectedTheme] = useState<string>('');

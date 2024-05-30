@@ -3,8 +3,7 @@ import Home from '../pages/Home';
 import Error from '../pages/Error';
 import RegionDetail from '../pages/RegionDetail';
 import ThemeDetail from '../pages/ThemeDetail';
-import AllRegions from '../pages/AllRegions';
-import AllThemes from '../pages/AllThemes';
+import PostList from '../pages/PostList';
 import Login from '../pages/Login';
 import SignUp from '../pages/SignUp';
 import CreatePost from '../pages/CreatePost';
@@ -34,8 +33,8 @@ const AppRouterComponent = (): JSX.Element => {
     return (
         <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/regions" element={<AllRegions />} />
-            <Route path="/themes" element={<AllThemes />} />
+            <Route path="/regions" element={<PostList />} />
+            <Route path="/themes" element={<PostList />} />
             <Route path="/regions/:regionID" element={<RegionDetail />} />
             <Route path="/themes/:themeID" element={<ThemeDetail />} />
             <Route path="/login" element={<AuthRedirect currentUser={currentUser} component={<Login />} />} />
