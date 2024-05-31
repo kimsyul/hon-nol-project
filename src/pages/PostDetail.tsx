@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
+import DOMPurify from 'dompurify';
 
 interface Post {
     title: string;
@@ -26,9 +27,10 @@ const PostDetail: React.FC = () => {
             const docSnap = await getDoc(docRef);
 
             if (docSnap.exists()) {
+                const safeHTML = DOMPurify.sanitize(docSnap.data().content, { USE_PROFILES: { html: true } });
                 setPost({
                     title: docSnap.data().title,
-                    content: docSnap.data().content,
+                    content: safeHTML,
                 });
             } else {
                 console.log('No such document!');
@@ -43,7 +45,7 @@ const PostDetail: React.FC = () => {
     return (
         <Container>
             <Title>{post?.title}</Title>
-            <Content>{post?.content}</Content>
+            <Content dangerouslySetInnerHTML={{ __html: post.content }} />
         </Container>
     );
 };
