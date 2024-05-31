@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
@@ -9,12 +9,19 @@ interface Post {
     content: string;
 }
 
-const PostDetail = (): JSX.Element => {
+const PostDetail: React.FC = () => {
     const { postId } = useParams<{ postId?: string }>();
     const [post, setPost] = useState<Post | null>(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchPost = async () => {
+            if (!postId) {
+                console.log('No postId provieded');
+                navigate('/');
+                return;
+            }
+
             const docRef = doc(db, 'posts', postId);
             const docSnap = await getDoc(docRef);
 
@@ -25,10 +32,11 @@ const PostDetail = (): JSX.Element => {
                 });
             } else {
                 console.log('No such document!');
+                navigate('/');
             }
         };
         fetchPost();
-    }, [postId]);
+    }, [postId, navigate]);
 
     if (!post) return <p>Loading...</p>;
 
