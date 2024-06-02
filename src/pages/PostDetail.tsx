@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import DOMPurify from 'dompurify';
+import CommentForm from '../components/common/CommentForm';
+import CommentsList from '../components/common/CommentsList';
 
 interface Post {
     title: string;
@@ -46,6 +48,8 @@ const PostDetail: React.FC = () => {
         <Container>
             <Title>{post?.title}</Title>
             <Content dangerouslySetInnerHTML={{ __html: post.content }} />
+            {postId && <CommentForm postId={postId} />}
+            {postId && <CommentsList postId={postId} />}
         </Container>
     );
 };
