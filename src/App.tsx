@@ -6,10 +6,11 @@ import Footer from './components/layouts/Footer';
 import AppRouter from './router/router';
 import Contents from './components/layouts/Contents';
 import GlobalStyle from './assets/styles/GlobalStyle';
+import { FirebaseProvider } from './FirebaseContext';
 
 function App(): JSX.Element {
     return (
-        <>
+        <FirebaseProvider>
             <GlobalStyle />
             <BrowserRouter>
                 <section>
@@ -20,7 +21,7 @@ function App(): JSX.Element {
                     <Footer />
                 </section>
             </BrowserRouter>
-        </>
+        </FirebaseProvider>
     );
 }
 

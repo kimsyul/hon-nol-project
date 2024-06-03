@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { db } from '../../firebaseConfig';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { FirebaseContext } from '../../FirebaseContext';
 import styled from 'styled-components';
 import { Button } from '../../assets/styles/Form';
 
@@ -9,23 +10,37 @@ interface CommentFormProps {
 }
 
 const CommentForm: React.FC<CommentFormProps> = ({ postId }) => {
-    const [comment, setComment] = useState('');
+    const [comment, setComment] = useState<string>('');
+    const { currentUser } = useContext(FirebaseContext);
 
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
-        if (comment.trim() === '') return;
+
+        if (!currentUser) {
+            alert('로그인이 필요합니다!');
+            return;
+        }
+
+        if (comment.trim() === '') {
+            alert('댓글 내용을 입력해주세요.');
+            return;
+        }
 
         const commentData = {
-            postId: postId,
-            text: comment,
-            createdAt: new Date(),
+            postId,
+            comment,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+            authorId: currentUser.uid,
         };
 
         try {
-            await addDoc(collection(db, 'comments'), commentData);
+            await addDoc(collection(db, 'posts', postId, 'comments'), commentData);
+            console.log('Comment successfully written!');
             setComment('');
         } catch (error) {
             console.error('Error adding comment: ', error);
+            alert('다시 시도해주세요.ㅠ_ㅠ');
         }
     };
 

@@ -25,31 +25,40 @@ const PostDetail: React.FC = () => {
                 return;
             }
 
-            const docRef = doc(db, 'posts', postId);
-            const docSnap = await getDoc(docRef);
+            try {
+                const docRef = doc(db, 'posts', postId);
+                const docSnap = await getDoc(docRef);
 
-            if (docSnap.exists()) {
-                const safeHTML = DOMPurify.sanitize(docSnap.data().content, { USE_PROFILES: { html: true } });
-                setPost({
-                    title: docSnap.data().title,
-                    content: safeHTML,
-                });
-            } else {
-                console.log('No such document!');
+                if (docSnap.exists()) {
+                    const safeHTML = DOMPurify.sanitize(docSnap.data().content, { USE_PROFILES: { html: true } });
+                    setPost({
+                        title: docSnap.data().title,
+                        content: safeHTML,
+                    });
+                } else {
+                    console.log('No such document!');
+                    navigate('/');
+                }
+            } catch (error) {
+                console.error('Error fetching post: ', error);
                 navigate('/');
             }
         };
         fetchPost();
     }, [postId, navigate]);
 
-    if (!post) return <p>Loading...</p>;
+    if (!post) return <span className="loading loading-ring loading-lg"></span>;
 
     return (
         <Container>
             <Title>{post?.title}</Title>
             <Content dangerouslySetInnerHTML={{ __html: post.content }} />
-            {postId && <CommentForm postId={postId} />}
-            {postId && <CommentsList postId={postId} />}
+            {postId ? (
+                <>
+                    <CommentForm postId={postId} />
+                    <CommentsList postId={postId} />
+                </>
+            ) : null}
         </Container>
     );
 };

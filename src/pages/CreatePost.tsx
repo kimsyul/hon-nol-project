@@ -1,4 +1,4 @@
-import { useState, useRef, ChangeEvent } from 'react';
+import { useState, useRef, ChangeEvent, useContext } from 'react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import ReactQuill from 'react-quill';
@@ -6,6 +6,7 @@ import 'react-quill/dist/quill.snow.css';
 import styled from 'styled-components';
 import { Title, Form, SelectContainer, Select, SubmitButton } from '../assets/styles/PostStyle';
 import { categories } from '../categoryList.tsx';
+import { FirebaseContext } from '../FirebaseContext.tsx';
 
 const CreatePost = (): JSX.Element => {
     const [title, setTitle] = useState<string>('');
@@ -13,6 +14,7 @@ const CreatePost = (): JSX.Element => {
     const [selectedRegion, setSelectedRegion] = useState<string>('');
     const [selectedSubregion, setSelectedSubregion] = useState<string>('');
     const [selectedTheme, setSelectedTheme] = useState<string>('');
+    const { currentUser } = useContext(FirebaseContext);
 
     const quillRef = useRef<ReactQuill | null>(null);
 
@@ -86,6 +88,11 @@ const CreatePost = (): JSX.Element => {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
+        if (!currentUser) {
+            console.log('No user logged in');
+            return;
+        }
+
         const post = {
             title,
             content: content,
@@ -94,6 +101,7 @@ const CreatePost = (): JSX.Element => {
             theme: selectedTheme,
             createdAt: serverTimestamp(),
             updatedAt: serverTimestamp(),
+            authorId: currentUser.uid,
         };
 
         try {

@@ -1,7 +1,7 @@
 import { ListContainer, ItemContainer, PostTitle, Info, PostPreview } from '../assets/styles/ListLayout';
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { collection, getDocs } from 'firebase/firestore';
+import { Link, useParams } from 'react-router-dom';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 
 interface Post {
@@ -14,10 +14,18 @@ interface Post {
 
 const PostList = (): JSX.Element => {
     const [posts, setPosts] = useState<Post[]>([]);
+    const { category, value } = useParams<{ category?: string; value?: string }>();
 
     useEffect(() => {
         const fetchPosts = async () => {
-            const querySnapshot = await getDocs(collection(db, 'posts'));
+            let q;
+            if (category && value) {
+                q = query(collection(db, 'posts'), where(category, '==', value));
+            } else {
+                q = collection(db, 'posts');
+            }
+
+            const querySnapshot = await getDocs(q);
             const postsData = querySnapshot.docs.map((doc) => ({
                 id: doc.id,
                 title: doc.data().title,
@@ -29,7 +37,7 @@ const PostList = (): JSX.Element => {
         };
 
         fetchPosts();
-    }, []);
+    }, [category, value]);
 
     return (
         <ListContainer>
