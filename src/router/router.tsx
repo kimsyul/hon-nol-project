@@ -1,8 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import Home from '../pages/Home';
 import Error from '../pages/Error';
-import RegionDetail from '../pages/RegionDetail';
-import ThemeDetail from '../pages/ThemeDetail';
 import PostList from '../pages/PostList';
 import Login from '../pages/Login';
 import SignUp from '../pages/SignUp';
@@ -36,6 +34,9 @@ const AppRouterComponent = (): JSX.Element => {
             <Route path="/" element={<Home />} />
             <Route path="/regions" element={<PostList />} />
             <Route path="/themes" element={<PostList />} />
+            <Route path="/regions/:regionId/:subregionId" element={<PostList />} />
+            <Route path="/regions/:regionId" element={<PostList />} />
+            <Route path="/themes/:themeId" element={<PostList />} />
             <Route path="/posts/:postId" element={<PostDetail />} />
             <Route path="/login" element={<AuthRedirect currentUser={currentUser} component={<Login />} />} />
             <Route path="/sign-up" element={<AuthRedirect currentUser={currentUser} component={<SignUp />} />} />

@@ -9,18 +9,23 @@ interface Post {
     title: string;
     content: string;
     region: string;
+    subregion: string;
     theme: string;
 }
 
 const PostList = (): JSX.Element => {
+    const { regionId, subregionId, themeId } = useParams();
     const [posts, setPosts] = useState<Post[]>([]);
-    const { category, value } = useParams<{ category?: string; value?: string }>();
 
     useEffect(() => {
         const fetchPosts = async () => {
             let q;
-            if (category && value) {
-                q = query(collection(db, 'posts'), where(category, '==', value));
+            if (subregionId) {
+                q = query(collection(db, 'posts'), where('subregion', '==', subregionId));
+            } else if (regionId) {
+                q = query(collection(db, 'posts'), where('region', '==', regionId));
+            } else if (themeId) {
+                q = query(collection(db, 'posts'), where('theme', '==', themeId));
             } else {
                 q = collection(db, 'posts');
             }
@@ -31,13 +36,14 @@ const PostList = (): JSX.Element => {
                 title: doc.data().title,
                 content: doc.data().content.replace(/<\/?[^>]+(>|$)/g, ''),
                 region: doc.data().region,
+                subregion: doc.data().subregion,
                 theme: doc.data().theme,
             }));
             setPosts(postsData);
         };
 
         fetchPosts();
-    }, [category, value]);
+    }, [regionId, subregionId, themeId]);
 
     return (
         <ListContainer>
@@ -47,7 +53,7 @@ const PostList = (): JSX.Element => {
                         <PostTitle>{post.title}</PostTitle>
                         <PostPreview>{post.content.substring(0, 100)}...</PostPreview>
                         <Info>
-                            {post.region} / {post.theme}
+                            {post.region} - {post.subregion} / {post.theme}
                         </Info>
                     </Link>
                 </ItemContainer>
