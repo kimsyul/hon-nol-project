@@ -55,8 +55,8 @@ const PostDetail: React.FC = () => {
             <Content dangerouslySetInnerHTML={{ __html: post.content }} />
             {postId ? (
                 <>
-                    <CommentForm postId={postId} />
                     <CommentsList postId={postId} />
+                    <CommentForm postId={postId} />
                 </>
             ) : null}
         </Container>
@@ -69,8 +69,8 @@ const Container = styled.div`
     background-color: white;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    gap: 10px;
+    justify-content: start;
+    gap: 15px;
     width: 100%;
     max-width: 800px;
     margin: 0 auto;
@@ -78,15 +78,17 @@ const Container = styled.div`
     border: none;
     border-radius: 4px;
     height: 100vh;
+    overflow: auto;
 `;
 
 const Title = styled.h1`
-    padding: 20px;
     font-size: 30px;
     font-weight: bold;
+    margin-top: 30px;
 `;
 
 const Content = styled.div`
-    margin-top: 20px;
     border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 20px;
 `;

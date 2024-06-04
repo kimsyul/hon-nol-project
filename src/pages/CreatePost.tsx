@@ -22,6 +22,7 @@ const CreatePost = (): JSX.Element => {
         const region = e.target.value;
         setSelectedRegion(region);
         setSelectedSubregion('');
+        console.log(e);
     };
 
     const handleSubregionChange = (e: ChangeEvent<HTMLSelectElement>) => {

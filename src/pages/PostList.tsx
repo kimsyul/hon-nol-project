@@ -1,4 +1,4 @@
-import { ListContainer, ItemContainer, PostTitle, Info, PostPreview } from '../assets/styles/ListLayout';
+import { ListContainer, ItemContainer, PostTitle, PostPreview, Info } from '../assets/styles/ListLayout';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { collection, getDocs, query, where } from 'firebase/firestore';
@@ -52,10 +52,8 @@ const PostList = (): JSX.Element => {
                     <Link to={`/posts/${post.id}`}>
                         <PostTitle>{post.title}</PostTitle>
                         <PostPreview>{post.content.substring(0, 100)}...</PostPreview>
-                        <Info>
-                            {post.region} - {post.subregion} / {post.theme}
-                        </Info>
                     </Link>
+                    {/* <Info>{post.region}</Info> */}
                 </ItemContainer>
             ))}
         </ListContainer>

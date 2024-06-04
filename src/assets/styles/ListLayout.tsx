@@ -21,11 +21,16 @@ export const ItemContainer = styled.div`
     border: 1px solid #ccc;
     border-radius: 8px;
     cursor: pointer;
+    &:hover {
+        border: 1px solid #ffabab;
+    }
 `;
 
 export const PostTitle = styled.h3`
     margin: 0 0 10px 0;
     color: #333;
+    font-size: 18px;
+    font-weight: bold;
 `;
 
 export const PostPreview = styled.p`

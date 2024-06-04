@@ -47,7 +47,7 @@ const CommentForm: React.FC<CommentFormProps> = ({ postId }) => {
     return (
         <Form onSubmit={handleSubmit}>
             <Textarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder="댓글을 적어주세요!" />
-            <Button type="submit">게시하기</Button>
+            <CommentButton type="submit">등록</CommentButton>
         </Form>
     );
 };
@@ -57,11 +57,23 @@ export default CommentForm;
 const Form = styled.form`
     display: flex;
     flex-direction: column;
-    margin-top: 20px;
+    gap: 10px;
+    align-items: end;
 `;
 
 const Textarea = styled.textarea`
-    margin-bottom: 10px;
     padding: 8px;
     resize: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 20px;
+    width: 100%;
+    &:focus {
+        border-color: #ffabab;
+        outline: none;
+    }
+`;
+
+const CommentButton = styled(Button)`
+    width: 20%;
 `;

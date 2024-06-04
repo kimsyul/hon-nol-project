@@ -46,20 +46,35 @@ const CommentsList: React.FC<CommentsListProps> = ({ postId }) => {
     if (error) return <p>Error loading comments: {error.message}</p>;
 
     return (
-        <div>
-            {comments.map((comment: Comment) => (
-                <CommentItem key={comment.id}>
-                    <p>{comment.text}</p>
-                </CommentItem>
-            ))}
-        </div>
+        <>
+            <Comment>댓글</Comment>
+            <CommentListContainer>
+                {comments.map((comment: Comment) => (
+                    <CommentItem key={comment.id}>
+                        <p>{comment.text}</p>
+                    </CommentItem>
+                ))}
+            </CommentListContainer>
+        </>
     );
 };
 
 export default CommentsList;
 
+const Comment = styled.span`
+    font-size: 16px;
+    font-weight: bold;
+    margin-left: 5px;
+    color: #ffabab;
+`;
+
+const CommentListContainer = styled.div`
+    border-top: 2px solid #ccc;
+    border-bottom: 2px solid #ccc;
+`;
+
 const CommentItem = styled.div`
-    padding: 10px;
+    padding: 15px;
     border-bottom: 1px solid #ccc;
     &:last-child {
         border-bottom: none;
