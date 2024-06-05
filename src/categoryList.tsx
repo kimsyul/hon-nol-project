@@ -7,8 +7,13 @@ interface Region {
     subregions: { [key: string]: Subregion };
 }
 
+interface Subtheme {
+    name: string;
+}
+
 interface Theme {
     name: string;
+    subthemes: { [key: string]: Subtheme };
 }
 
 export interface Categories {
@@ -254,12 +259,62 @@ export const categories: Categories = {
         },
     },
     themes: {
-        course: { name: '코스' },
-        nature: { name: '자연' },
-        dining: { name: '식당' },
-        cafe: { name: '카페' },
-        culture: { name: '문화' },
-        travel: { name: '여행' },
-        other: { name: '기타' },
+        course: {
+            name: '코스',
+            subthemes: {
+                hiking: { name: '하이킹' },
+                cityTour: { name: '도시 투어' },
+                culturalTour: { name: '문화 투어' },
+            },
+        },
+        nature: {
+            name: '자연',
+            subthemes: {
+                mountain: { name: '산' },
+                beach: { name: '해변' },
+                park: { name: '공원' },
+            },
+        },
+        dining: {
+            name: '식당',
+            subthemes: {
+                korean: { name: '한식' },
+                chinese: { name: '중식' },
+                japanese: { name: '일식' },
+                western: { name: '양식' },
+            },
+        },
+        cafe: {
+            name: '카페',
+            subthemes: {
+                dessert: { name: '디저트' },
+                coffee: { name: '커피' },
+                brunch: { name: '브런치' },
+            },
+        },
+        culture: {
+            name: '문화',
+            subthemes: {
+                museum: { name: '박물관' },
+                artGallery: { name: '미술관' },
+                theater: { name: '극장' },
+            },
+        },
+        accommodation: {
+            name: '숙소',
+            subthemes: {
+                hotel: { name: '호텔' },
+                guesthouse: { name: '게스트하우스' },
+                hostel: { name: '호스텔' },
+                bookstay: { name: '북스테이' },
+            },
+        },
+        other: {
+            name: '기타',
+            subthemes: {
+                event: { name: '이벤트' },
+                shopping: { name: '쇼핑' },
+            },
+        },
     },
 };

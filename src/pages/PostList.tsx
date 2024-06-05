@@ -1,62 +1,94 @@
 import { ListContainer, ItemContainer, PostTitle, PostPreview, Info } from '../assets/styles/ListLayout';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import {
+    collection,
+    getDocs,
+    query,
+    where,
+    orderBy,
+    limit,
+    startAfter,
+    DocumentData,
+    QueryDocumentSnapshot,
+} from 'firebase/firestore';
 import { db } from '../firebaseConfig';
+import { usePaginationData, FirestoreDocument } from '../components/Pagination/usePaginationData';
+import Pagination from '../components/Pagination/Pagination';
+import { categories } from '../categoryList';
 
-interface Post {
+interface Post extends FirestoreDocument {
     id: string;
     title: string;
     content: string;
     region: string;
     subregion: string;
     theme: string;
+    subtheme: string;
 }
 
-const PostList = (): JSX.Element => {
-    const { regionId, subregionId, themeId } = useParams();
-    const [posts, setPosts] = useState<Post[]>([]);
+const postsPerPage = 5;
 
-    useEffect(() => {
-        const fetchPosts = async () => {
-            let q;
-            if (subregionId) {
-                q = query(collection(db, 'posts'), where('subregion', '==', subregionId));
-            } else if (regionId) {
-                q = query(collection(db, 'posts'), where('region', '==', regionId));
-            } else if (themeId) {
-                q = query(collection(db, 'posts'), where('theme', '==', themeId));
-            } else {
-                q = collection(db, 'posts');
-            }
+const PostList: React.FC = () => {
+    const { regionId, subregionId, themeId, subthemeId } = useParams<{
+        regionId?: string;
+        subregionId?: string;
+        themeId?: string;
+        subthemeId?: string;
+    }>();
+    const fieldFilters = [];
+    if (regionId) fieldFilters.push({ field: 'region', value: regionId });
+    if (subregionId) fieldFilters.push({ field: 'subregion', value: subregionId });
+    if (themeId) fieldFilters.push({ field: 'theme', value: themeId });
+    if (subthemeId) fieldFilters.push({ field: 'subtheme', value: subthemeId });
 
-            const querySnapshot = await getDocs(q);
-            const postsData = querySnapshot.docs.map((doc) => ({
-                id: doc.id,
-                title: doc.data().title,
-                content: doc.data().content.replace(/<\/?[^>]+(>|$)/g, ''),
-                region: doc.data().region,
-                subregion: doc.data().subregion,
-                theme: doc.data().theme,
-            }));
-            setPosts(postsData);
-        };
+    const {
+        data: posts,
+        loading,
+        totalPages,
+        currentPage,
+        handlePageChange,
+    } = usePaginationData<Post>({
+        collectionName: 'posts',
+        fieldFilters,
+        itemsPerPage: postsPerPage,
+    });
 
-        fetchPosts();
-    }, [regionId, subregionId, themeId]);
+    const getCategoryName = (region: string, subregion: string, theme: string, subtheme: string) => {
+        const regionName = categories.regions[region]?.name || '';
+        const subregionName = categories.regions[region]?.subregions[subregion]?.name || '';
+        const themeName = categories.themes[theme]?.name || '';
+        const subthemeName = categories.themes[theme]?.subthemes[subtheme]?.name || '';
+        return { regionName, subregionName, themeName, subthemeName };
+    };
+
+    if (loading) return <span className="loading loading-ring loading-lg"></span>;
 
     return (
-        <ListContainer>
-            {posts.map((post) => (
-                <ItemContainer key={post.id}>
-                    <Link to={`/posts/${post.id}`}>
-                        <PostTitle>{post.title}</PostTitle>
-                        <PostPreview>{post.content.substring(0, 100)}...</PostPreview>
-                    </Link>
-                    {/* <Info>{post.region}</Info> */}
-                </ItemContainer>
-            ))}
-        </ListContainer>
+        <>
+            <ListContainer>
+                {posts.map((post, index) => {
+                    const { regionName, subregionName, themeName, subthemeName } = getCategoryName(
+                        post.region,
+                        post.subregion,
+                        post.theme,
+                        post.subtheme,
+                    );
+                    return (
+                        <ItemContainer key={`${post.id}-${index}`}>
+                            <Link to={`/posts/${post.id}`}>
+                                <PostTitle>{post.title}</PostTitle>
+                                <PostPreview>{post.content.substring(0, 100)}...</PostPreview>
+                                <Info>
+                                    {regionName} - {subregionName} / {themeName} - {subthemeName}
+                                </Info>
+                            </Link>
+                        </ItemContainer>
+                    );
+                })}
+            </ListContainer>
+            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+        </>
     );
 };
 

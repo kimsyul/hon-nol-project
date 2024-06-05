@@ -14,6 +14,11 @@ const CreatePost = (): JSX.Element => {
     const [selectedRegion, setSelectedRegion] = useState<string>('');
     const [selectedSubregion, setSelectedSubregion] = useState<string>('');
     const [selectedTheme, setSelectedTheme] = useState<string>('');
+    const [selectedSubtheme, setSelectedSubtheme] = useState<string>('');
+    const [regionName, setRegionName] = useState<string>('');
+    const [subregionName, setSubregionName] = useState<string>('');
+    const [themeName, setThemeName] = useState<string>('');
+    const [subthemeName, setSubthemeName] = useState<string>('');
     const { currentUser } = useContext(FirebaseContext);
 
     const quillRef = useRef<ReactQuill | null>(null);
@@ -22,69 +27,30 @@ const CreatePost = (): JSX.Element => {
         const region = e.target.value;
         setSelectedRegion(region);
         setSelectedSubregion('');
-        console.log(e);
+        setRegionName(categories.regions[region].name);
     };
 
     const handleSubregionChange = (e: ChangeEvent<HTMLSelectElement>) => {
-        setSelectedSubregion(e.target.value);
+        const subregion = e.target.value;
+        setSelectedSubregion(subregion);
+        setSubregionName(categories.regions[selectedRegion].subregions[subregion].name);
     };
 
     const handleThemeChange = (e: ChangeEvent<HTMLSelectElement>) => {
-        setSelectedTheme(e.target.value);
+        const theme = e.target.value;
+        setSelectedTheme(theme);
+        setThemeName(categories.themes[theme].name);
+    };
+
+    const handleSubthemeChange = (e: ChangeEvent<HTMLSelectElement>) => {
+        const subtheme = e.target.value;
+        setSelectedSubtheme(subtheme);
+        setSubthemeName(categories.themes[selectedTheme].subthemes[subtheme].name);
     };
 
     const handleEditorChange = (value: string) => {
         setContent(value);
     };
-
-    // // 포맷 가져오기
-    // const Font = Quill.import('formats/font');
-    // const Size = Quill.import('attributors/style/size');
-    // const Blockquote = Quill.import('formats/blockquote');
-    // const CodeBlock = Quill.import('formats/code-block');
-
-    // // 폰트 및 사이즈 화이트리스트 설정
-    // Font.whitelist = ['sans-serif', 'serif', 'monospace'];
-    // Size.whitelist = ['small', 'large', 'huge'];
-
-    // // Quill에 포맷 등록
-    // Quill.register(
-    //     {
-    //         'formats/font': Font,
-    //         'attributors/style/size': Size,
-    //         'formats/blockquote': Blockquote,
-    //         'formats/code-block': CodeBlock,
-    //     },
-    //     true,
-    // );
-
-    // const modules = {
-    //     toolbar: [
-    //         [{ font: Font.whitelist }],
-    //         [{ size: Size.whitelist }],
-    //         ['bold', 'italic', 'underline', 'strike'],
-    //         ['blockquote', 'code-block'],
-    //         [{ list: 'ordered' }, { list: 'bullet' }],
-    //         [{ indent: '-1' }, { indent: '+1' }],
-    //         [{ align: [] }],
-    //         ['clean'],
-    //     ],
-    // };
-
-    // const formats = [
-    //     'header',
-    //     'bold',
-    //     'italic',
-    //     'underline',
-    //     'strike',
-    //     'align',
-    //     'list',
-    //     'bullet',
-    //     'link',
-    //     'image',
-    //     'color',
-    //     'background',
-    // ];
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -98,8 +64,13 @@ const CreatePost = (): JSX.Element => {
             title,
             content: content,
             region: selectedRegion,
+            regionName: regionName,
             subregion: selectedSubregion,
+            subregionName: subregionName,
             theme: selectedTheme,
+            themeName: themeName,
+            subtheme: selectedSubtheme,
+            subthemeName: subthemeName,
             createdAt: serverTimestamp(),
             updatedAt: serverTimestamp(),
             authorId: currentUser.uid,
@@ -112,6 +83,7 @@ const CreatePost = (): JSX.Element => {
             setSelectedRegion('');
             setSelectedSubregion('');
             setSelectedTheme('');
+            setSelectedSubtheme('');
             alert('단비같은 정보 공유 감사합니다!');
         } catch (error) {
             console.error('Error adding document: ', error);
@@ -148,7 +120,7 @@ const CreatePost = (): JSX.Element => {
                     required
                 >
                     <option value="" disabled>
-                        구체적으로 어디인가요?
+                        오 그 중 어디에요?
                     </option>
                     {selectedRegion &&
                         Object.entries(categories.regions[selectedRegion].subregions).map(([key, { name }]) => (
@@ -167,6 +139,24 @@ const CreatePost = (): JSX.Element => {
                             {name}
                         </option>
                     ))}
+                </Select>
+
+                <Select
+                    id="subthemeCategory"
+                    value={selectedSubtheme}
+                    onChange={handleSubthemeChange}
+                    disabled={!selectedTheme}
+                    required
+                >
+                    <option value="" disabled>
+                        궁금한데 더 자세히요!
+                    </option>
+                    {selectedTheme &&
+                        Object.entries(categories.themes[selectedTheme].subthemes).map(([key, { name }]) => (
+                            <option key={key} value={key}>
+                                {name}
+                            </option>
+                        ))}
                 </Select>
             </SelectContainer>
             <div>
