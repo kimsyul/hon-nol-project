@@ -19,22 +19,29 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
         }
     };
 
+    const renderPageNumbers = () => {
+        const pages = [];
+        for (let i = 1; i <= totalPages; i++) {
+            if (i === currentPage || (i >= currentPage && i <= currentPage + 3) || i === totalPages) {
+                pages.push(
+                    <button key={i} onClick={() => onPageChange(i)} disabled={i === currentPage}>
+                        {i}
+                    </button>,
+                );
+            } else if (i === currentPage + 4) {
+                pages.push(<span key={i}>...</span>);
+            }
+        }
+
+        return pages;
+    };
+
     return (
         <PaginationContainer>
             <button onClick={handlePrevPage} disabled={currentPage === 1}>
                 이전
             </button>
-            {[...Array(totalPages).keys()].map((num) =>
-                num + 1 === currentPage ||
-                (num + 1 >= currentPage && num + 1 <= currentPage + 3) ||
-                num + 1 === totalPages ? (
-                    <button key={num + 1} onClick={() => onPageChange(num + 1)}>
-                        {num + 1}
-                    </button>
-                ) : num + 1 === currentPage + 4 ? (
-                    <span key={num + 1}>...</span>
-                ) : null,
-            )}
+            {renderPageNumbers()}
             <button onClick={handleNextPage} disabled={currentPage === totalPages}>
                 다음
             </button>

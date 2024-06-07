@@ -1,21 +1,10 @@
+// components/PostList.tsx
 import { ListContainer, ItemContainer, PostTitle, PostPreview, Info } from '../assets/styles/ListLayout';
-import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import {
-    collection,
-    getDocs,
-    query,
-    where,
-    orderBy,
-    limit,
-    startAfter,
-    DocumentData,
-    QueryDocumentSnapshot,
-} from 'firebase/firestore';
-import { db } from '../firebaseConfig';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { usePaginationData, FirestoreDocument } from '../components/Pagination/usePaginationData';
 import Pagination from '../components/Pagination/Pagination';
 import { categories } from '../categoryList';
+import queryString from 'query-string';
 
 interface Post extends FirestoreDocument {
     id: string;
@@ -36,11 +25,15 @@ const PostList: React.FC = () => {
         themeId?: string;
         subthemeId?: string;
     }>();
+    const location = useLocation();
+    const { q: searchTerm } = queryString.parse(location.search);
+
     const fieldFilters = [];
     if (regionId) fieldFilters.push({ field: 'region', value: regionId });
     if (subregionId) fieldFilters.push({ field: 'subregion', value: subregionId });
     if (themeId) fieldFilters.push({ field: 'theme', value: themeId });
     if (subthemeId) fieldFilters.push({ field: 'subtheme', value: subthemeId });
+    if (searchTerm) fieldFilters.push({ field: 'searchTerm', value: searchTerm as string });
 
     const {
         data: posts,
@@ -48,6 +41,7 @@ const PostList: React.FC = () => {
         totalPages,
         currentPage,
         handlePageChange,
+        quotaExceeded,
     } = usePaginationData<Post>({
         collectionName: 'posts',
         fieldFilters,
@@ -62,7 +56,12 @@ const PostList: React.FC = () => {
         return { regionName, subregionName, themeName, subthemeName };
     };
 
-    if (loading) return <span className="loading loading-ring loading-lg"></span>;
+    if (quotaExceeded) return <div>할당량 초과. 잠시 후 다시 시도하세요.</div>;
+    if (loading && posts.length === 0) return <span className="loading loading-ring loading-lg"></span>;
+
+    if (!Array.isArray(posts)) {
+        return <div>게식들을 불러오는 중 오류가 발생했습니;다.</div>;
+    }
 
     return (
         <>
@@ -87,7 +86,9 @@ const PostList: React.FC = () => {
                     );
                 })}
             </ListContainer>
-            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+            {posts.length > 0 && (
+                <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+            )}
         </>
     );
 };

@@ -12,8 +12,9 @@ import { useEffect, useState } from 'react';
 import AuthRedirect from './AuthRedirect';
 import ProtectedRoute from './ProtectedRoute';
 import PostDetail from '../pages/PostDetail';
+import SearchResults from '../pages/SearchResults';
 
-const AppRouterComponent = (): JSX.Element => {
+const AppRouterComponent: React.FC = () => {
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -37,6 +38,8 @@ const AppRouterComponent = (): JSX.Element => {
             <Route path="/regions/:regionId/:subregionId" element={<PostList />} />
             <Route path="/regions/:regionId" element={<PostList />} />
             <Route path="/themes/:themeId" element={<PostList />} />
+            <Route path="/themes/:themeId/:subthemeId" element={<PostList />} />
+            <Route path="/search" element={<SearchResults />} />
             <Route path="/posts/:postId" element={<PostDetail />} />
             <Route path="/login" element={<AuthRedirect currentUser={currentUser} component={<Login />} />} />
             <Route path="/sign-up" element={<AuthRedirect currentUser={currentUser} component={<SignUp />} />} />

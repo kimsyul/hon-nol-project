@@ -6,6 +6,7 @@ import { onAuthStateChanged, signOut, User } from 'firebase/auth';
 import { auth } from '../../firebaseConfig';
 import { categories, Categories } from '../../categoryList';
 import Nav from './Nav';
+import SearchBar from '../common/SearchBar';
 
 const Header = (): JSX.Element => {
     const [user, setUser] = useState<User | null>(null);
@@ -41,6 +42,9 @@ const Header = (): JSX.Element => {
                         테마별
                     </CategoryButton>
                 </CategoryContainer>
+                <SearchBarContainer>
+                    <SearchBar />
+                </SearchBarContainer>
                 {user ? (
                     <div>
                         <LoginButton to="/post">글쓰기</LoginButton>
@@ -91,6 +95,13 @@ const CategoryButton = styled(Link)`
         color: #ffabab;
         border-bottom: 3px solid #ffabab;
     }
+`;
+
+// 검색
+const SearchBarContainer = styled.div`
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
 `;
 
 //버튼
