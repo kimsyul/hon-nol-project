@@ -1,9 +1,10 @@
 import { useState, ChangeEvent, FormEvent, useEffect } from 'react';
 import styled from 'styled-components';
-import { categories, Categories } from '../../categoryList';
-import { SearchButton, SearchInput } from './SearchBar';
+import { categories } from '../../categoryList';
+import { SearchInput } from './SearchBar';
 import { Select, SelectContainer } from '../../assets/styles/PostStyle';
 import { Button } from '../../assets/styles/Form';
+import { FirestoreDocument } from '../../hook/usePaginationData';
 
 interface AdvancedSearchBarProps {
     onSearch: (
@@ -12,14 +13,14 @@ interface AdvancedSearchBarProps {
         subregion: string,
         theme: string,
         subtheme: string,
-        searchField: string,
+        searchField: keyof FirestoreDocument | 'all',
     ) => void;
     initialSearchTerm?: string;
     initialRegion?: string;
     initialSubregion?: string;
     initialTheme?: string;
     initialSubtheme?: string;
-    initialSearchField?: string;
+    initialSearchField?: keyof FirestoreDocument | 'all';
 }
 
 const AdvancedSearchBar: React.FC<AdvancedSearchBarProps> = ({
@@ -36,7 +37,7 @@ const AdvancedSearchBar: React.FC<AdvancedSearchBarProps> = ({
     const [selectedSubregion, setSelectedSubregion] = useState(initialSubregion);
     const [selectedTheme, setSelectedTheme] = useState(initialTheme);
     const [selectedSubtheme, setSelectedSubtheme] = useState(initialSubtheme);
-    const [searchField, setSearchField] = useState(initialSearchField);
+    const [searchField, setSearchField] = useState<keyof FirestoreDocument | 'all'>(initialSearchField);
 
     useEffect(() => {
         setSearchTerm(initialSearchTerm);
@@ -73,18 +74,19 @@ const AdvancedSearchBar: React.FC<AdvancedSearchBarProps> = ({
     return (
         <SearchBarContainer onSubmit={handleSearch}>
             <SearchInput
+                id="advancedKeyword"
                 type="text"
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
                 placeholder="검색어를 입력하세요"
             />
             <SelectContainer>
-                <Select value={searchField} onChange={(e) => setSearchField(e.target.value)}>
+                <Select id="searchField" value={searchField} onChange={(e) => setSearchField(e.target.value)}>
                     <option value="all">제목 및 내용</option>
                     <option value="title">제목</option>
                     <option value="content">내용</option>
                 </Select>
-                <Select value={selectedRegion} onChange={handleRegionChange}>
+                <Select id="searchRegion" value={selectedRegion} onChange={handleRegionChange}>
                     <option value="">상위 지역 선택</option>
                     {Object.keys(categories.regions).map((key) => (
                         <option key={key} value={key}>
@@ -92,7 +94,7 @@ const AdvancedSearchBar: React.FC<AdvancedSearchBarProps> = ({
                         </option>
                     ))}
                 </Select>
-                <Select value={selectedSubregion} onChange={handleSubregionChange}>
+                <Select id="searchSubregion" value={selectedSubregion} onChange={handleSubregionChange}>
                     <option value="">하위 지역 선택</option>
                     {selectedRegion &&
                         Object.keys(categories.regions[selectedRegion].subregions).map((key) => (
@@ -101,7 +103,7 @@ const AdvancedSearchBar: React.FC<AdvancedSearchBarProps> = ({
                             </option>
                         ))}
                 </Select>
-                <Select value={selectedTheme} onChange={handleThemeChange}>
+                <Select id="searchTheme" value={selectedTheme} onChange={handleThemeChange}>
                     <option value="">상위 테마 선택</option>
                     {Object.keys(categories.themes).map((key) => (
                         <option key={key} value={key}>
@@ -109,7 +111,7 @@ const AdvancedSearchBar: React.FC<AdvancedSearchBarProps> = ({
                         </option>
                     ))}
                 </Select>
-                <Select value={selectedSubtheme} onChange={handleSubthemeChange}>
+                <Select id="searchSubtheme" value={selectedSubtheme} onChange={handleSubthemeChange}>
                     <option value="">하위 테마 선택</option>
                     {selectedTheme &&
                         Object.keys(categories.themes[selectedTheme].subthemes).map((key) => (

@@ -8,7 +8,7 @@ import { categories, Categories } from '../../categoryList';
 import Nav from './Nav';
 import SearchBar from '../common/SearchBar';
 
-const Header = (): JSX.Element => {
+const Header: React.FC = () => {
     const [user, setUser] = useState<User | null>(null);
     const [menu, setMenu] = useState('home');
 

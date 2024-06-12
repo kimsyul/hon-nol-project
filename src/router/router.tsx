@@ -41,6 +41,7 @@ const AppRouterComponent: React.FC = () => {
             <Route path="/themes/:themeId/:subthemeId" element={<PostList />} />
             <Route path="/search" element={<SearchResults />} />
             <Route path="/posts/:postId" element={<PostDetail />} />
+            <Route path="/search" element={<SearchResults />} />
             <Route path="/login" element={<AuthRedirect currentUser={currentUser} component={<Login />} />} />
             <Route path="/sign-up" element={<AuthRedirect currentUser={currentUser} component={<SignUp />} />} />
             <Route path="/post" element={<ProtectedRoute currentUser={currentUser} component={<CreatePost />} />} />

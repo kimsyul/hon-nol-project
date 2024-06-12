@@ -16,6 +16,7 @@ const SearchBar: React.FC = () => {
     return (
         <SearchForm onSubmit={handleSearch}>
             <SearchInput
+                id="searchBar"
                 type="text"
                 placeholder="검색어를 입력하세요..."
                 value={searchTerm}

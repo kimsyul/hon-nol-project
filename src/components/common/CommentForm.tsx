@@ -46,7 +46,12 @@ const CommentForm: React.FC<CommentFormProps> = ({ postId }) => {
 
     return (
         <Form onSubmit={handleSubmit}>
-            <Textarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder="댓글을 적어주세요!" />
+            <Textarea
+                id="commentForm"
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                placeholder="댓글을 적어주세요!"
+            />
             <CommentButton type="submit">등록</CommentButton>
         </Form>
     );
