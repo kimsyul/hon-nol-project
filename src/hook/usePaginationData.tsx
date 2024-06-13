@@ -88,6 +88,7 @@ const usePaginationData = <T extends FirestoreDocument>({
     } = useQuery(['posts', collectionName, fieldFilters, currentPage, useLocalData], fetchPageData, {
         keepPreviousData: true,
     });
+
     useEffect(() => {
         if (totalError || postsError) {
             const errorMessage = (error: unknown): string => {
@@ -116,6 +117,7 @@ const usePaginationData = <T extends FirestoreDocument>({
         currentPage,
         handlePageChange,
         error: totalError || postsError,
+        useLocalData,
     };
 };
 

@@ -1,71 +1,59 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../firebaseConfig';
 import DOMPurify from 'dompurify';
 import CommentForm from '../components/common/CommentForm';
 import CommentsList from '../components/common/CommentsList';
-
-interface Post {
-    title: string;
-    content: string;
-}
+import usePaginationData from '../hook/usePaginationData';
+import usePostDetail from '../hook/usePostDetail';
+import { Container, Message } from './PostList';
 
 const PostDetail: React.FC = () => {
     const { postId } = useParams<{ postId?: string }>();
-    const [post, setPost] = useState<Post | null>(null);
     const navigate = useNavigate();
+    const { useLocalData } = usePaginationData({ collectionName: 'posts', itemsPerPage: 5 }); //usePagination훅에서 useLocal상태 가져옴
+    const { data: post, isLoading, error } = usePostDetail(postId!, useLocalData);
 
     useEffect(() => {
-        const fetchPost = async () => {
-            if (!postId) {
-                console.log('No postId provieded');
-                navigate('/');
-                return;
-            }
-
-            try {
-                const docRef = doc(db, 'posts', postId);
-                const docSnap = await getDoc(docRef);
-
-                if (docSnap.exists()) {
-                    const safeHTML = DOMPurify.sanitize(docSnap.data().content, { USE_PROFILES: { html: true } });
-                    setPost({
-                        title: docSnap.data().title,
-                        content: safeHTML,
-                    });
-                } else {
-                    console.log('No such document!');
-                    navigate('/');
-                }
-            } catch (error) {
-                console.error('Error fetching post: ', error);
-                navigate('/');
-            }
-        };
-        fetchPost();
+        if (!postId) {
+            console.log('No postId provieded');
+            navigate('/');
+        }
     }, [postId, navigate]);
 
-    if (!post) return <span className="loading loading-ring loading-lg"></span>;
+    if (isLoading) return <span className="loading loading-ring loading-lg"></span>;
+    if (error)
+        return (
+            <Container>
+                <Message>게시글을 불러오는 중 오류가 발생했습니다.</Message>
+            </Container>
+        );
+    if (!post)
+        return (
+            <Container>
+                <Message>게시글이 없습니다!</Message>
+            </Container>
+        );
 
     return (
-        <Container>
-            <Title>{post?.title}</Title>
-            <Content dangerouslySetInnerHTML={{ __html: post.content }} />
+        <PostContainer>
+            <PostTitle>{post?.title}</PostTitle>
+            <PostContent
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content, { USE_PROFILES: { html: true } }) }}
+            />
             {postId ? (
                 <>
                     <CommentsList postId={postId} />
                     <CommentForm postId={postId} />
                 </>
             ) : null}
-        </Container>
+        </PostContainer>
     );
 };
 
 export default PostDetail;
 
-const Container = styled.div`
+const PostContainer = styled.div`
     background-color: white;
     display: flex;
     flex-direction: column;
@@ -81,13 +69,13 @@ const Container = styled.div`
     overflow: auto;
 `;
 
-const Title = styled.h1`
+const PostTitle = styled.h1`
     font-size: 30px;
     font-weight: bold;
     margin-top: 30px;
 `;
 
-const Content = styled.div`
+const PostContent = styled.div`
     border: 1px solid #ccc;
     border-radius: 4px;
     padding: 20px;

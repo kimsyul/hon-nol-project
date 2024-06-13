@@ -60,7 +60,7 @@ const PostList: React.FC<PostListProps> = ({
         currentPage,
         handlePageChange,
         error,
-    } = usePaginationData<Post>({
+    } = usePaginationData({
         collectionName: 'posts',
         fieldFilters,
         itemsPerPage: postsPerPage,
