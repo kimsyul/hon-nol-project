@@ -19,16 +19,19 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
         }
     };
 
-    const getPageNumbers = () => {
+    const renderPageNumbers = () => {
         const pageNumbers = [];
-        const maxVisiblePages = 3;
-        const startPage = Math.max(1, currentPage - 1);
-        const endPage = Math.min(totalPages, currentPage + maxVisiblePages - 1);
-
-        for (let i = startPage; i <= endPage; i++) {
-            pageNumbers.push(i);
+        for (let i = 1; i <= totalPages; i++) {
+            if (i === 1 || i === totalPages || (i >= currentPage && i <= currentPage + 3)) {
+                pageNumbers.push(
+                    <button key={i} onClick={() => onPageChange(i)} disabled={i === currentPage}>
+                        {i}
+                    </button>,
+                );
+            } else if (i === currentPage + 4) {
+                pageNumbers.push(<span key={i}>...</span>);
+            }
         }
-
         return pageNumbers;
     };
 
@@ -54,16 +57,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
             <button onClick={handlePrevPage} disabled={currentPage === 1}>
                 이전
             </button>
-            {getPageNumbers().map((num) => (
-                <button
-                    key={num}
-                    onClick={() => onPageChange(num)}
-                    style={{ fontWeight: num === currentPage ? 'bold' : 'normal' }}
-                >
-                    {num}
-                </button>
-            ))}
-            {currentPage + 2 < totalPages && <span>･･･</span>}
+            {renderPageNumbers()}
             {currentPage + 2 < totalPages && <button onClick={() => onPageChange(totalPages)}>{totalPages}</button>}
             <button onClick={handleNextPage} disabled={currentPage === totalPages}>
                 다음

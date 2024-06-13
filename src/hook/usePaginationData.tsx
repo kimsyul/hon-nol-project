@@ -32,7 +32,7 @@ const usePaginationData = <T extends FirestoreDocument>({
     itemsPerPage,
 }: UsePaginatedDataProps) => {
     const [currentPage, setCurrentPage] = useState<number>(1);
-    const [lastDoc, setLastDoc] = useState<QueryDocumentSnapshot<DocumentData> | null>(null);
+    const [lastDocs, setLastDocs] = useState<QueryDocumentSnapshot<DocumentData>[]>([]);
     const [useLocalData, setUseLocalData] = useState<boolean>(false);
     const queryClient = useQueryClient();
 
@@ -61,6 +61,7 @@ const usePaginationData = <T extends FirestoreDocument>({
             const endIndex = startIndex + itemsPerPage;
             return filteredData.slice(startIndex, endIndex);
         }
+        const lastDoc = lastDocs[currentPage - 2] || null;
         const q = buildQuery(collectionName, fieldFilters, 'createdAt', itemsPerPage, lastDoc);
         const querySnapshot = await getDocs(q);
         const fetchedData: T[] = querySnapshot.docs.map(
@@ -70,9 +71,13 @@ const usePaginationData = <T extends FirestoreDocument>({
                     ...doc.data(),
                 }) as T,
         );
-        setLastDoc(querySnapshot.docs[querySnapshot.docs.length - 1] || null);
+        setLastDocs((prevDocs) => {
+            const newDocs = [...prevDocs];
+            newDocs[currentPage - 1] = querySnapshot.docs[querySnapshot.docs.length - 1] || null;
+            return newDocs;
+        });
         return fetchedData;
-    }, [collectionName, fieldFilters, itemsPerPage, lastDoc, useLocalData, filterLocalData, currentPage]);
+    }, [collectionName, fieldFilters, itemsPerPage, lastDocs, useLocalData, filterLocalData, currentPage]);
 
     const {
         data: totalPages,
@@ -105,7 +110,6 @@ const usePaginationData = <T extends FirestoreDocument>({
 
     const handlePageChange = (newPage: number) => {
         setCurrentPage(newPage);
-        setLastDoc(null); //페이지 변경시 lastDoc 초기화
         queryClient.invalidateQueries(['posts']);
         refetch();
     };
