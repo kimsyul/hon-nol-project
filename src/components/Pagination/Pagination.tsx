@@ -19,29 +19,52 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
         }
     };
 
-    const renderPageNumbers = () => {
-        const pages = [];
-        for (let i = 1; i <= totalPages; i++) {
-            if (i === currentPage || (i >= currentPage && i <= currentPage + 3) || i === totalPages) {
-                pages.push(
-                    <button key={i} onClick={() => onPageChange(i)} disabled={i === currentPage}>
-                        {i}
-                    </button>,
-                );
-            } else if (i === currentPage + 4) {
-                pages.push(<span key={i}>...</span>);
-            }
+    const getPageNumbers = () => {
+        const pageNumbers = [];
+        const maxVisiblePages = 3;
+        const startPage = Math.max(1, currentPage - 1);
+        const endPage = Math.min(totalPages, currentPage + maxVisiblePages - 1);
+
+        for (let i = startPage; i <= endPage; i++) {
+            pageNumbers.push(i);
         }
 
-        return pages;
+        return pageNumbers;
     };
+
+    // const renderPageNumbers = () => {
+    //     const pages = [];
+    //     for (let i = 1; i <= totalPages; i++) {
+    //         if (i === currentPage || (i >= currentPage && i <= currentPage + 3) || i === totalPages) {
+    //             pages.push(
+    //                 <button key={i} onClick={() => onPageChange(i)} disabled={i === currentPage}>
+    //                     {i}
+    //                 </button>,
+    //             );
+    //         } else if (i === currentPage + 4) {
+    //             pages.push(<span key={i}>...</span>);
+    //         }
+    //     }
+
+    //     return pages;
+    // };
 
     return (
         <PaginationContainer>
             <button onClick={handlePrevPage} disabled={currentPage === 1}>
                 이전
             </button>
-            {renderPageNumbers()}
+            {getPageNumbers().map((num) => (
+                <button
+                    key={num}
+                    onClick={() => onPageChange(num)}
+                    style={{ fontWeight: num === currentPage ? 'bold' : 'normal' }}
+                >
+                    {num}
+                </button>
+            ))}
+            {currentPage + 2 < totalPages && <span>･･･</span>}
+            {currentPage + 2 < totalPages && <button onClick={() => onPageChange(totalPages)}>{totalPages}</button>}
             <button onClick={handleNextPage} disabled={currentPage === totalPages}>
                 다음
             </button>

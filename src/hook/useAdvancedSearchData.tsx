@@ -1,6 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
-import postsData from '../mockData/posts.json';
+import { getDocs } from 'firebase/firestore';
+import buildQuery from '../components/Pagination/buildQuery';
 import { FirestoreDocument } from './usePaginationData';
+
+interface Filter {
+    field: keyof FirestoreDocument;
+    value: string;
+}
 
 interface UseAdvancedSearchDataProps {
     searchTerm: string;
@@ -20,26 +26,43 @@ const useAdvancedSearchData = ({
     selectedSubcategory2,
 }: UseAdvancedSearchDataProps) => {
     const [filteredData, setFilteredData] = useState<FirestoreDocument[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
 
-    const filterData = useCallback(() => {
-        let data = postsData as FirestoreDocument[];
-        if (selectedCategory1) data = data.filter((item) => item.region === selectedCategory1);
-        if (selectedSubcategory1) data = data.filter((item) => item.subregion === selectedSubcategory1);
-        if (selectedCategory2) data = data.filter((item) => item.theme === selectedCategory2);
-        if (selectedSubcategory2) data = data.filter((item) => item.subtheme === selectedSubcategory2);
-        if (searchField === 'all') {
-            data = data.filter((item) => item.title.includes(searchTerm) || item.content.includes(searchTerm));
-        } else {
-            data = data.filter((item) => String(item[searchField]).includes(searchTerm));
+    const fetchAdvancedSearchData = useCallback(async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const filters: Filter[] = [];
+            if (selectedCategory1) filters.push({ field: 'region', value: selectedCategory1 });
+            if (selectedSubcategory1) filters.push({ field: 'subregion', value: selectedSubcategory1 });
+            if (selectedCategory2) filters.push({ field: 'theme', value: selectedCategory2 });
+            if (selectedSubcategory2) filters.push({ field: 'subtheme', value: selectedSubcategory2 });
+            if (searchField !== 'all') filters.push({ field: searchField, value: searchTerm });
+
+            const q = buildQuery('posts', filters, 'createdAt', 1000, null);
+            const querySnapshot = await getDocs(q);
+            const fetchedData: FirestoreDocument[] = querySnapshot.docs.map(
+                (doc) =>
+                    ({
+                        id: doc.id,
+                        ...doc.data(),
+                    }) as FirestoreDocument,
+            );
+            setFilteredData(fetchedData);
+        } catch (error) {
+            console.error('검색 데이터를 가져오는 중 오류 발생:', error);
+            setError('검색 데이터를 가져오는 중 오류 발생');
+        } finally {
+            setLoading(false);
         }
-        setFilteredData(data);
     }, [searchTerm, searchField, selectedCategory1, selectedSubcategory1, selectedCategory2, selectedSubcategory2]);
 
     useEffect(() => {
-        filterData();
-    }, [filterData]);
+        fetchAdvancedSearchData();
+    }, [fetchAdvancedSearchData]);
 
-    return { filteredData };
+    return { filteredData, loading, error };
 };
 
 export default useAdvancedSearchData;

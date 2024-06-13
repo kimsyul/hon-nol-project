@@ -16,7 +16,6 @@ interface PostListProps {
     selectedCategory2?: string;
     selectedSubcategory2?: string;
     searchField?: keyof FirestoreDocument | 'all';
-    data?: FirestoreDocument[];
 }
 
 const postsPerPage = 5;
@@ -28,7 +27,6 @@ const PostList: React.FC<PostListProps> = ({
     selectedCategory2,
     selectedSubcategory2,
     searchField = 'all',
-    data,
 }) => {
     const { regionId, subregionId, themeId, subthemeId } = useParams<{
         regionId?: string;
@@ -61,6 +59,7 @@ const PostList: React.FC<PostListProps> = ({
         totalPages,
         currentPage,
         handlePageChange,
+        error,
     } = usePaginationData<Post>({
         collectionName: 'posts',
         fieldFilters,
@@ -75,21 +74,26 @@ const PostList: React.FC<PostListProps> = ({
         return { regionName, subregionName, themeName, subthemeName };
     };
 
-    if (loading && !data)
+    if (loading)
         return (
             <Container>
                 <span className="loading loading-ring loading-lg"></span>
             </Container>
         );
 
-    const displayData = data || posts;
+    if (error)
+        return (
+            <Container>
+                <Message>게시글을 불러오는 중 오류가 발생했습니다. 다시 시도해주세요.</Message>
+            </Container>
+        );
 
     return (
         <>
             <ListContainer>
                 {posts.length === 0 ? (
                     <Container>
-                        <NoPostsMessage>게시글이 없습니다.ㅠ_ㅠ</NoPostsMessage>
+                        <Message>게시글이 없습니다.ㅠ_ㅠ</Message>
                     </Container>
                 ) : (
                     posts.map((post, index) => {
@@ -114,7 +118,7 @@ const PostList: React.FC<PostListProps> = ({
                     })
                 )}
             </ListContainer>
-            {displayData.length > 0 && !data && (
+            {posts.length > 0 && (
                 <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
             )}
         </>
@@ -123,14 +127,14 @@ const PostList: React.FC<PostListProps> = ({
 
 export default PostList;
 
-const Container = styled.div`
+export const Container = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
     height: 300px;
 `;
 
-const NoPostsMessage = styled.div`
+export const Message = styled.div`
     font-size: 24px;
     color: #999;
 `;

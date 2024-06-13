@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import AdvancedSearchBar from '../components/common/AdvancedSearchBar';
-import PostList from './PostList';
+import useAdvancedSearchData from '../hook/useAdvancedSearchData';
 import queryString from 'query-string';
 import { FirestoreDocument } from '../hook/usePaginationData';
-import useAdvancedSearchData from '../hook/useAdvancedSearchData';
+import { ListContainer, ItemContainer, PostTitle, PostPreview, Info } from '../assets/styles/ListLayout';
+import { Container, Message } from '../pages/PostList';
+import { Link } from 'react-router-dom';
 
 const SearchResults: React.FC = () => {
     const location = useLocation();
@@ -24,7 +26,7 @@ const SearchResults: React.FC = () => {
     const [selectedSubtheme, setSelectedSubtheme] = useState((subtheme as string) || '');
     const [searchField, setSearchField] = useState(initialSearchField as keyof FirestoreDocument | 'all');
 
-    const { filteredData } = useAdvancedSearchData({
+    const { filteredData, loading, error } = useAdvancedSearchData({
         searchTerm,
         searchField,
         selectedCategory1: selectedRegion,
@@ -73,6 +75,21 @@ const SearchResults: React.FC = () => {
         }
     }, [initialSearchField, initialSearchTerm, region, subregion, theme, subtheme]);
 
+    if (loading) {
+        return (
+            <Container>
+                <span className="loading loading-ring loading-lg"></span>
+            </Container>
+        );
+    }
+    if (error) {
+        return (
+            <Container>
+                <Message>오류가 발생했습니다. 다시 시도해 주세요.</Message>
+            </Container>
+        );
+    }
+
     return (
         <div>
             <AdvancedSearchBar
@@ -84,15 +101,25 @@ const SearchResults: React.FC = () => {
                 initialSubtheme={selectedSubtheme}
                 initialSearchField={searchField}
             />
-            <PostList
-                searchTerm={searchTerm}
-                selectedCategory1={selectedRegion}
-                selectedSubcategory1={selectedSubregion}
-                selectedCategory2={selectedTheme}
-                selectedSubcategory2={selectedSubtheme}
-                searchField={searchField}
-                data={filteredData}
-            />
+            <ListContainer>
+                {filteredData.length === 0 ? (
+                    <Container>
+                        <Message>게시글이 없습니다.ㅠ_ㅠ</Message>
+                    </Container>
+                ) : (
+                    filteredData.map((post, index) => (
+                        <ItemContainer key={`${post.id}-${index}`}>
+                            <Link to={`/posts/${post.id}`}>
+                                <PostTitle>{post.title}</PostTitle>
+                                <PostPreview>{post.content.substring(0, 100)}...</PostPreview>
+                                <Info>
+                                    {post.region} - {post.subregion} / {post.theme} - {post.subtheme}
+                                </Info>
+                            </Link>
+                        </ItemContainer>
+                    ))
+                )}
+            </ListContainer>
         </div>
     );
 };
