@@ -19,49 +19,56 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
         }
     };
 
-    const renderPageNumbers = () => {
+    const handleFirstPage = () => {
+        if (currentPage !== 1) {
+            onPageChange(1);
+        }
+    };
+
+    const handleLastPage = () => {
+        if (currentPage !== totalPages) {
+            onPageChange(totalPages);
+        }
+    };
+
+    const getPageNumbers = () => {
         const pageNumbers = [];
-        for (let i = 1; i <= totalPages; i++) {
-            if (i === 1 || i === totalPages || (i >= currentPage && i <= currentPage + 3)) {
-                pageNumbers.push(
-                    <button key={i} onClick={() => onPageChange(i)} disabled={i === currentPage}>
-                        {i}
-                    </button>,
-                );
-            } else if (i === currentPage + 4) {
-                pageNumbers.push(<span key={i}>...</span>);
-            }
+        const groupSize = 3;
+
+        let startPage = Math.max(1, currentPage - Math.floor(groupSize / 2));
+        let endPage = startPage + groupSize - 1;
+
+        if (endPage > totalPages) {
+            endPage = totalPages;
+            startPage = Math.max(1, endPage - groupSize + 1);
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            pageNumbers.push(i);
         }
         return pageNumbers;
     };
 
-    // const renderPageNumbers = () => {
-    //     const pages = [];
-    //     for (let i = 1; i <= totalPages; i++) {
-    //         if (i === currentPage || (i >= currentPage && i <= currentPage + 3) || i === totalPages) {
-    //             pages.push(
-    //                 <button key={i} onClick={() => onPageChange(i)} disabled={i === currentPage}>
-    //                     {i}
-    //                 </button>,
-    //             );
-    //         } else if (i === currentPage + 4) {
-    //             pages.push(<span key={i}>...</span>);
-    //         }
-    //     }
-
-    //     return pages;
-    // };
-
     return (
         <PaginationContainer>
-            <button onClick={handlePrevPage} disabled={currentPage === 1}>
-                이전
-            </button>
-            {renderPageNumbers()}
-            {currentPage + 2 < totalPages && <button onClick={() => onPageChange(totalPages)}>{totalPages}</button>}
-            <button onClick={handleNextPage} disabled={currentPage === totalPages}>
-                다음
-            </button>
+            <PageButton onClick={handleFirstPage} disabled={currentPage === 1}>
+                {'<<'}
+            </PageButton>
+            <PageButton onClick={handlePrevPage} disabled={currentPage === 1}>
+                {'<'}
+            </PageButton>
+
+            {getPageNumbers().map((num) => (
+                <PageButton key={num} onClick={() => onPageChange(num)} $active={num === currentPage}>
+                    {num}
+                </PageButton>
+            ))}
+            <PageButton onClick={handleNextPage} disabled={currentPage === totalPages}>
+                {'>'}
+            </PageButton>
+            <PageButton onClick={handleLastPage} disabled={currentPage === totalPages}>
+                {'>>'}
+            </PageButton>
         </PaginationContainer>
     );
 };
@@ -71,23 +78,18 @@ export default Pagination;
 const PaginationContainer = styled.div`
     display: flex;
     justify-content: center;
+    align-items: center;
     gap: 5px;
     margin-top: 20px;
+`;
 
-    button {
-        border: 1px solid #ccc;
-        background-color: white;
-        padding: 5px 10px;
-        border-radius: 4px;
-        cursor: pointer;
-        &:disabled {
-            cursor: not-allowed;
-            color: #ccc;
-        }
-    }
-
-    span {
-        display: flex;
-        align-items: center;
+const PageButton = styled.button<{ $active?: boolean }>`
+    font-weight: ${({ $active }) => ($active ? 'bold' : 'normal')};
+    color: ${({ $active }) => ($active ? '#ffabab' : 'gray')};
+    padding: 5px 10px;
+    cursor: pointer;
+    &:disabled {
+        cursor: not-allowed;
+        color: #ccc;
     }
 `;

@@ -5,10 +5,6 @@ import Pagination from '../components/Pagination/Pagination';
 import { categories } from '../categoryList';
 import styled from 'styled-components';
 
-interface Post extends FirestoreDocument {
-    id: string;
-}
-
 interface PostListProps {
     searchTerm?: string;
     selectedCategory1?: string;
@@ -89,39 +85,37 @@ const PostList: React.FC<PostListProps> = ({
         );
 
     return (
-        <>
-            <ListContainer>
-                {posts.length === 0 ? (
-                    <Container>
-                        <Message>게시글이 없습니다.ㅠ_ㅠ</Message>
-                    </Container>
-                ) : (
-                    posts.map((post, index) => {
-                        const { regionName, subregionName, themeName, subthemeName } = getCategoryName(
-                            post.region,
-                            post.subregion,
-                            post.theme,
-                            post.subtheme,
-                        );
+        <ListContainer>
+            {posts.length === 0 ? (
+                <Container>
+                    <Message>게시글이 없습니다.ㅠ_ㅠ</Message>
+                </Container>
+            ) : (
+                posts.map((post, index) => {
+                    const { regionName, subregionName, themeName, subthemeName } = getCategoryName(
+                        post.region,
+                        post.subregion,
+                        post.theme,
+                        post.subtheme,
+                    );
 
-                        return (
-                            <ItemContainer key={`${post.id}-${index}`}>
-                                <Link to={`/posts/${post.id}`}>
-                                    <PostTitle>{post.title}</PostTitle>
-                                    <PostPreview>{post.content.substring(0, 100)}...</PostPreview>
-                                    <Info>
-                                        {regionName} - {subregionName} / {themeName} - {subthemeName}
-                                    </Info>
-                                </Link>
-                            </ItemContainer>
-                        );
-                    })
-                )}
-            </ListContainer>
+                    return (
+                        <ItemContainer key={`${post.id}-${index}`}>
+                            <Link to={`/posts/${post.id}`}>
+                                <PostTitle>{post.title}</PostTitle>
+                                <PostPreview>{post.content.substring(0, 100)}...</PostPreview>
+                                <Info>
+                                    {regionName} - {subregionName} / {themeName} - {subthemeName}
+                                </Info>
+                            </Link>
+                        </ItemContainer>
+                    );
+                })
+            )}
             {posts.length > 0 && (
                 <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
             )}
-        </>
+        </ListContainer>
     );
 };
 
