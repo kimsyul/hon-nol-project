@@ -37,9 +37,7 @@ const AdvancedSearchBar: React.FC<AdvancedSearchBarProps> = ({
     const [selectedSubregion, setSelectedSubregion] = useState(initialSubregion);
     const [selectedTheme, setSelectedTheme] = useState(initialTheme);
     const [selectedSubtheme, setSelectedSubtheme] = useState(initialSubtheme);
-    const [searchField, setSearchField] = useState<keyof FirestoreDocument | 'all'>(
-        initialSearchField as keyof FirestoreDocument | 'all',
-    );
+    const [searchField, setSearchField] = useState<keyof FirestoreDocument | 'all'>(initialSearchField);
 
     useEffect(() => {
         setSearchTerm(initialSearchTerm);
@@ -73,11 +71,6 @@ const AdvancedSearchBar: React.FC<AdvancedSearchBarProps> = ({
         onSearch(searchTerm, selectedRegion, selectedSubregion, selectedTheme, selectedSubtheme, searchField);
     };
 
-    const handleSearchFieldChange = (e: ChangeEvent<HTMLSelectElement>) => {
-        const value = e.target.value as keyof FirestoreDocument | 'all';
-        setSearchField(value);
-    };
-
     return (
         <SearchBarContainer onSubmit={handleSearch}>
             <SearchInput
@@ -88,7 +81,11 @@ const AdvancedSearchBar: React.FC<AdvancedSearchBarProps> = ({
                 placeholder="검색어를 입력하세요"
             />
             <SelectContainer>
-                <Select id="searchField" value={searchField} onChange={handleSearchFieldChange}>
+                <Select
+                    id="searchField"
+                    value={searchField}
+                    onChange={(e) => setSearchField(e.target.value as keyof FirestoreDocument)}
+                >
                     <option value="all">제목 및 내용</option>
                     <option value="title">제목</option>
                     <option value="content">내용</option>
