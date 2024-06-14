@@ -5,16 +5,13 @@ import Pagination from '../components/Pagination/Pagination';
 import { categories } from '../categoryList';
 import styled from 'styled-components';
 
-interface Post extends FirestoreDocument {
-    id: string;
-}
-
 interface PostListProps {
     searchTerm?: string;
     selectedCategory1?: string;
     selectedSubcategory1?: string;
     selectedCategory2?: string;
     selectedSubcategory2?: string;
+    searchField?: keyof FirestoreDocument | 'all';
 }
 
 const postsPerPage = 5;
@@ -25,6 +22,7 @@ const PostList: React.FC<PostListProps> = ({
     selectedSubcategory1,
     selectedCategory2,
     selectedSubcategory2,
+    searchField = 'all',
 }) => {
     const { regionId, subregionId, themeId, subthemeId } = useParams<{
         regionId?: string;
@@ -42,14 +40,14 @@ const PostList: React.FC<PostListProps> = ({
     if (selectedSubcategory1) fieldFilters.push({ field: 'subregion', value: selectedSubcategory1 });
     if (selectedCategory2) fieldFilters.push({ field: 'region', value: selectedCategory2 });
     if (selectedSubcategory2) fieldFilters.push({ field: 'subregion', value: selectedSubcategory2 });
-    // if (searchTerm) {
-    //     if (searchField === 'all') {
-    //         fieldFilters.push({ field: 'title', value: searchTerm });
-    //         fieldFilters.push({ field: 'content', value: searchTerm });
-    //     } else {
-    //         fieldFilters.push({ field: searchField, value: searchTerm });
-    //     }
-    // }
+    if (searchTerm) {
+        if (searchField === 'all') {
+            fieldFilters.push({ field: 'title', value: searchTerm });
+            fieldFilters.push({ field: 'content', value: searchTerm });
+        } else {
+            fieldFilters.push({ field: searchField, value: searchTerm });
+        }
+    }
 
     const {
         data: posts,
@@ -58,11 +56,10 @@ const PostList: React.FC<PostListProps> = ({
         currentPage,
         handlePageChange,
         error,
-    } = usePaginationData<Post>({
+    } = usePaginationData({
         collectionName: 'posts',
         fieldFilters,
         itemsPerPage: postsPerPage,
-        searchTerm,
     });
 
     const getCategoryName = (region: string, subregion: string, theme: string, subtheme: string) => {

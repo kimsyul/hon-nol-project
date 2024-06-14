@@ -8,10 +8,7 @@ import { categories, Categories } from '../../categoryList';
 import Nav from './Nav';
 import SearchBar from '../common/SearchBar';
 
-const Header: React.FC<{ onSearch: (query: string) => void; initialSearchTerm: string }> = ({
-    onSearch,
-    initialSearchTerm,
-}) => {
+const Header: React.FC = () => {
     const [user, setUser] = useState<User | null>(null);
     const [menu, setMenu] = useState('home');
 
@@ -46,7 +43,7 @@ const Header: React.FC<{ onSearch: (query: string) => void; initialSearchTerm: s
                     </CategoryButton>
                 </CategoryContainer>
                 <SearchBarContainer>
-                    <SearchBar onSearch={onSearch} initialSearchTerm={initialSearchTerm} />
+                    <SearchBar />
                 </SearchBarContainer>
                 {user ? (
                     <div>
