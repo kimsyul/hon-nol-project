@@ -31,23 +31,36 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
         }
     };
 
-    const getPageNumbers = () => {
-        const pageNumbers = [];
-        const groupSize = 3;
+    const pageNumbers = [];
+    const groupSize = 3;
+    let startPage = Math.max(1, currentPage - Math.floor(groupSize / 2));
+    const endPage = Math.min(totalPages, startPage + groupSize - 1);
 
-        let startPage = Math.max(1, currentPage - Math.floor(groupSize / 2));
-        let endPage = startPage + groupSize - 1;
+    if (endPage - startPage + 1 < groupSize) {
+        startPage = Math.max(1, endPage - groupSize + 1);
+    }
 
-        if (endPage > totalPages) {
-            endPage = totalPages;
-            startPage = Math.max(1, endPage - groupSize + 1);
-        }
+    for (let i = startPage; i <= endPage; i++) {
+        pageNumbers.push(i);
+    }
 
-        for (let i = startPage; i <= endPage; i++) {
-            pageNumbers.push(i);
-        }
-        return pageNumbers;
-    };
+    // const getPageNumbers = () => {
+    //     const pageNumbers = [];
+    //     const groupSize = 3;
+
+    //     let startPage = Math.max(1, currentPage - Math.floor(groupSize / 2));
+    //     let endPage = startPage + groupSize - 1;
+
+    //     if (endPage > totalPages) {
+    //         endPage = totalPages;
+    //         startPage = Math.max(1, endPage - groupSize + 1);
+    //     }
+
+    //     for (let i = startPage; i <= endPage; i++) {
+    //         pageNumbers.push(i);
+    //     }
+    //     return pageNumbers;
+    // };
 
     return (
         <PaginationContainer>
@@ -58,7 +71,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
                 {'<'}
             </PageButton>
 
-            {getPageNumbers().map((num) => (
+            {pageNumbers.map((num) => (
                 <PageButton key={num} onClick={() => onPageChange(num)} $active={num === currentPage}>
                     {num}
                 </PageButton>
