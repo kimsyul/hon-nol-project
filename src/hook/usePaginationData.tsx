@@ -4,14 +4,10 @@ import { getDocs, QueryDocumentSnapshot, DocumentData } from 'firebase/firestore
 import buildQuery from '../components/Pagination/buildQuery';
 import postsData from '../mockData/posts.json';
 
-interface Filter {
-    field: keyof FirestoreDocument;
-    value: string;
-}
-
 interface UsePaginatedDataProps {
     collectionName: string;
-    fieldFilters?: Filter[];
+    searchTerm?: string;
+    fieldFilters?: { field: keyof FirestoreDocument; value: string }[];
     itemsPerPage: number;
 }
 
@@ -28,6 +24,7 @@ export interface FirestoreDocument {
 
 const usePaginationData = <T extends FirestoreDocument>({
     collectionName,
+    searchTerm = '',
     fieldFilters = [],
     itemsPerPage,
 }: UsePaginatedDataProps) => {
@@ -41,18 +38,26 @@ const usePaginationData = <T extends FirestoreDocument>({
         fieldFilters.forEach((filter) => {
             filteredData = filteredData.filter((item) => String(item[filter.field]).includes(filter.value));
         });
+
+        if (searchTerm) {
+            filteredData = filteredData.filter(
+                (item) =>
+                    item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    item.content.toLowerCase().includes(searchTerm.toLowerCase()),
+            );
+        }
         return filteredData;
-    }, [fieldFilters]);
+    }, [fieldFilters, searchTerm]);
 
     const fetchTotalItems = useCallback(async () => {
         if (useLocalData) {
             const filteredData = filterLocalData();
             return Math.ceil(filteredData.length / itemsPerPage);
         }
-        const q = buildQuery(collectionName, fieldFilters, 'createdAt', 1000, null);
+        const q = buildQuery(collectionName, searchTerm, 'createdAt', 1000, null);
         const querySnapshot = await getDocs(q);
         return Math.ceil(querySnapshot.size / itemsPerPage);
-    }, [collectionName, fieldFilters, itemsPerPage, useLocalData, filterLocalData]);
+    }, [collectionName, searchTerm, itemsPerPage, useLocalData, filterLocalData]);
 
     const fetchPageData = useCallback(async () => {
         if (useLocalData) {
@@ -62,7 +67,7 @@ const usePaginationData = <T extends FirestoreDocument>({
             return filteredData.slice(startIndex, endIndex);
         }
         const lastDoc = lastDocs[currentPage - 2] || null;
-        const q = buildQuery(collectionName, fieldFilters, 'createdAt', itemsPerPage, lastDoc);
+        const q = buildQuery(collectionName, searchTerm, 'createdAt', itemsPerPage, lastDoc);
         const querySnapshot = await getDocs(q);
         const fetchedData: T[] = querySnapshot.docs.map(
             (doc) =>
@@ -71,14 +76,15 @@ const usePaginationData = <T extends FirestoreDocument>({
                     ...doc.data(),
                 }) as T,
         );
-        setLastDocs((prevDocs) => {
-            const newDocs = [...prevDocs];
-            newDocs[currentPage - 1] = querySnapshot.docs[querySnapshot.docs.length - 1] || null;
-            return newDocs;
-        });
+        if (querySnapshot.docs.length > 0) {
+            setLastDocs((prev) => {
+                const newLastDocs = [...prev];
+                newLastDocs[currentPage - 1] = querySnapshot.docs[querySnapshot.docs.length - 1];
+                return newLastDocs;
+            });
+        }
         return fetchedData;
-    }, [collectionName, fieldFilters, itemsPerPage, lastDocs, useLocalData, filterLocalData, currentPage]);
-
+    }, [collectionName, searchTerm, itemsPerPage, lastDocs, useLocalData, filterLocalData, currentPage]);
     const {
         data: totalPages,
         isLoading: isTotalLoading,

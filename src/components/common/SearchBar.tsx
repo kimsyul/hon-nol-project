@@ -2,19 +2,24 @@ import { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 
-const SearchBar: React.FC = () => {
-    const [searchTerm, setSearchTerm] = useState('');
+interface SearchBarProps {
+    onSearch: (query: string) => void;
+    initialSearchTerm: string;
+}
+
+const SearchBar: React.FC<SearchBarProps> = ({ onSearch, initialSearchTerm }) => {
+    const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
     const navigate = useNavigate();
 
-    const handleSearch = (e: React.FormEvent) => {
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (searchTerm.trim()) {
-            navigate(`/search?q=${searchTerm}&field=all`);
-        }
+        onSearch(searchTerm);
+        navigate(`/search?q=${encodeURIComponent(searchTerm)}`);
+        setSearchTerm(''); // 검색 후 input 초기화
     };
 
     return (
-        <SearchForm onSubmit={handleSearch}>
+        <SearchForm onSubmit={handleSubmit}>
             <SearchInput
                 id="searchBar"
                 type="text"
