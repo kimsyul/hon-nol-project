@@ -1,7 +1,10 @@
-import React from 'react';
-
-const Error = (): JSX.Element => {
-  return <div>Error</div>;
+// src/pages/Error.tsx
+const Error: React.FC = () => {
+    return (
+        <div>
+            <h1>Error Page</h1>
+        </div>
+    );
 };
 
 export default Error;

@@ -3,7 +3,6 @@ import { useLocation } from 'react-router-dom';
 import AdvancedSearchBar from '../components/common/AdvancedSearchBar';
 import PostList from '../pages/PostList';
 import queryString from 'query-string';
-import useAdvancedSearchData from '../hook/useAdvancedSearchData';
 import { FirestoreDocument } from '../hook/usePaginationData';
 // import { ListContainer, ItemContainer, PostTitle, PostPreview, Info } from '../assets/styles/ListLayout';
 // import { Link } from 'react-router-dom';
