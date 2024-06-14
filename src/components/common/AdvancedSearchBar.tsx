@@ -37,9 +37,7 @@ const AdvancedSearchBar: React.FC<AdvancedSearchBarProps> = ({
     const [selectedSubregion, setSelectedSubregion] = useState(initialSubregion);
     const [selectedTheme, setSelectedTheme] = useState(initialTheme);
     const [selectedSubtheme, setSelectedSubtheme] = useState(initialSubtheme);
-    const [searchField, setSearchField] = useState<keyof FirestoreDocument | 'all'>(
-        initialSearchField as keyof FirestoreDocument | 'all',
-    );
+    const [searchField, setSearchField] = useState<keyof FirestoreDocument | 'all'>(initialSearchField);
 
     useEffect(() => {
         setSearchTerm(initialSearchTerm);
