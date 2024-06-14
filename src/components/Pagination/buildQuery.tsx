@@ -10,33 +10,30 @@ import {
     QueryDocumentSnapshot,
 } from 'firebase/firestore';
 import { db } from '../../firebaseConfig';
-import { FirestoreDocument } from '../../hook/usePaginationData';
+
+interface Filter {
+    field: string;
+    value: string;
+}
 
 const buildQuery = (
     collectionName: string,
-    searchTerm: string,
-    orderField: keyof FirestoreDocument,
+    fieldFilters: Filter[],
+    orderField: string,
     itemsPerPage: number,
     lastDoc: QueryDocumentSnapshot<DocumentData> | null,
-): Query => {
-    const constraints = [];
-    if (searchTerm) {
-        const lowerSearchTerm = searchTerm.toLowerCase().trim();
-        constraints.push(where('title', '>=', lowerSearchTerm));
-        constraints.push(where('title', '<=', lowerSearchTerm + '\uf8ff'));
-        constraints.push(where('content', '>=', lowerSearchTerm));
-        constraints.push(where('content', '<=', lowerSearchTerm + '\uf8ff'));
-    }
+): Query<DocumentData> => {
+    let q = query(collection(db, collectionName), orderBy(orderField));
 
-    constraints.push(orderBy(orderField));
+    fieldFilters.forEach((filter) => {
+        q = query(q, where(filter.field, '==', filter.value));
+    });
 
     if (lastDoc) {
-        constraints.push(startAfter(lastDoc));
+        q = query(q, startAfter(lastDoc));
     }
 
-    constraints.push(limit(itemsPerPage));
-
-    return query(collection(db, collectionName), ...constraints);
+    return query(q, limit(itemsPerPage));
 };
 
 export default buildQuery;

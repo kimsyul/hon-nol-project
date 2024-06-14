@@ -12,6 +12,7 @@ import { useEffect, useState } from 'react';
 import AuthRedirect from './AuthRedirect';
 import ProtectedRoute from './ProtectedRoute';
 import PostDetail from '../pages/PostDetail';
+import SearchResults from '../pages/SearchResults';
 
 const AppRouterComponent: React.FC = () => {
     const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -38,8 +39,9 @@ const AppRouterComponent: React.FC = () => {
             <Route path="/regions/:regionId" element={<PostList />} />
             <Route path="/themes/:themeId" element={<PostList />} />
             <Route path="/themes/:themeId/:subthemeId" element={<PostList />} />
-            <Route path="/search" element={<PostList />} />
+            <Route path="/search" element={<SearchResults />} />
             <Route path="/posts/:postId" element={<PostDetail />} />
+            <Route path="/search" element={<SearchResults />} />
             <Route path="/login" element={<AuthRedirect currentUser={currentUser} component={<Login />} />} />
             <Route path="/sign-up" element={<AuthRedirect currentUser={currentUser} component={<SignUp />} />} />
             <Route path="/post" element={<ProtectedRoute currentUser={currentUser} component={<CreatePost />} />} />

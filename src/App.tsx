@@ -7,20 +7,14 @@ import AppRouter from './router/router';
 import Contents from './components/layouts/Contents';
 import GlobalStyle from './assets/styles/GlobalStyle';
 import { FirebaseProvider } from './FirebaseContext';
-import { useState } from 'react';
 
-const App: React.FC = () => {
-    const [searchTerm, setSearchTerm] = useState<string>('');
-
-    const handleSearch = (query: string) => {
-        setSearchTerm(query);
-    };
+function App(): JSX.Element {
     return (
         <FirebaseProvider>
             <GlobalStyle />
             <BrowserRouter>
                 <section>
-                    <Header onSearch={handleSearch} initialSearchTerm={searchTerm} />
+                    <Header />
                     <Contents>
                         <AppRouter />
                     </Contents>
@@ -29,6 +23,6 @@ const App: React.FC = () => {
             </BrowserRouter>
         </FirebaseProvider>
     );
-};
+}
 
 export default App;

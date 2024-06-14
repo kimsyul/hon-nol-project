@@ -2,16 +2,8 @@ import { ListContainer, ItemContainer, PostTitle, PostPreview, Info } from '../a
 import { Link, useParams } from 'react-router-dom';
 import usePaginationData, { FirestoreDocument } from '../hook/usePaginationData';
 import Pagination from '../components/Pagination/Pagination';
-import styled from 'styled-components';
-import queryString from 'query-string';
-import { useEffect, useState } from 'react';
 import { categories } from '../categoryList';
-
-interface Post extends FirestoreDocument {
-    id: string;
-}
-
-const postsPerPage = 5;
+import styled from 'styled-components';
 
 interface PostListProps {
     searchTerm?: string;
@@ -22,8 +14,10 @@ interface PostListProps {
     searchField?: keyof FirestoreDocument | 'all';
 }
 
+const postsPerPage = 5;
+
 const PostList: React.FC<PostListProps> = ({
-    searchTerm = '',
+    searchTerm,
     selectedCategory1,
     selectedSubcategory1,
     selectedCategory2,
@@ -46,6 +40,14 @@ const PostList: React.FC<PostListProps> = ({
     if (selectedSubcategory1) fieldFilters.push({ field: 'subregion', value: selectedSubcategory1 });
     if (selectedCategory2) fieldFilters.push({ field: 'region', value: selectedCategory2 });
     if (selectedSubcategory2) fieldFilters.push({ field: 'subregion', value: selectedSubcategory2 });
+    if (searchTerm) {
+        if (searchField === 'all') {
+            fieldFilters.push({ field: 'title', value: searchTerm });
+            fieldFilters.push({ field: 'content', value: searchTerm });
+        } else {
+            fieldFilters.push({ field: searchField, value: searchTerm });
+        }
+    }
 
     const {
         data: posts,
@@ -54,9 +56,8 @@ const PostList: React.FC<PostListProps> = ({
         currentPage,
         handlePageChange,
         error,
-    } = usePaginationData<Post>({
+    } = usePaginationData({
         collectionName: 'posts',
-        searchTerm: searchTerm || '',
         fieldFilters,
         itemsPerPage: postsPerPage,
     });
